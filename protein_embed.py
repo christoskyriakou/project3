@@ -6,15 +6,16 @@ from torch.utils.data import Dataset, DataLoader
 import argparse
 import os
 
-class ProteinDataset(Dataset):
+class ProteinDataset(Dataset):  
     def __init__(self,fasta_path):
-        self.data=[(rec.id,str (rec.seq)[:1022]) for rec in SeqIO.parse(fasta_path,"fasta")]
+        self.data=[(rec.id,str (rec.seq)[:1022]) for rec in SeqIO.parse(fasta_path, "fasta")]
     def __len__(self):
          return len(self.data)
     def __getitem__(self,idx):
         return self.data[idx]
 
-def embedding(input_fasta, output_dat, batch_size=16):
+def embedding(input_fasta, output_dat):
+    batch_size=16
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model, alphabet = esm.pretrained.esm2_t6_8M_UR50D()
     model.to(device) # loading the model to the device, in our case since we dont have an nvidia gpu its the cpu
@@ -22,6 +23,7 @@ def embedding(input_fasta, output_dat, batch_size=16):
     batch_converter=alphabet.get_batch_converter()
     dataset= ProteinDataset(input_fasta) 
     dataloader= DataLoader(dataset,batch_size=batch_size,shuffle=False) 
+
     all_embeddings=[]
     all_ids=[]
     total_proteins=len(dataset)
@@ -46,13 +48,12 @@ def embedding(input_fasta, output_dat, batch_size=16):
             ids.write(f"{protein_id}\n")         
     print(f"Done! Embeddings saved to {output_dat}")
 if __name__=="__main__":
-    parser=argparse.ArgumentParser()
+    parser=argparse.ArgumentParser()  
     parser.add_argument("-i",required=True)
     parser.add_argument("-o",required=True)
-    parser.add_argument("-b",type=int,default=16)
     args=parser.parse_args()    
     try:
-        embedding(args.i,args.o,args.b)
+        embedding(args.i,args.o)
     except Exception as e:
         print(f"we have an error {e}")
     
