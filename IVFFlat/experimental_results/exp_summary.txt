@@ -1,0 +1,502 @@
+IVFFlat Experimental Study Results
+Generated at: Sat Nov  1 20:13:40 EET 2025
+========================================
+
+
+=== mnist_kclusters_20 ===
+Parameters: kclusters=20, nprobe=3, N=10, R=2000, seed=1
+Silhouette score: 0.1032
+Average AF:          1.004222
+Recall@10:           0.916000 (91.6%)
+QPS:                 21258.50 queries/sec
+Avg approx time:     0.000047 sec
+Avg exact time:      0.000191 sec
+Speedup:             4.05x
+
+
+=== mnist_kclusters_30 ===
+Parameters: kclusters=30, nprobe=3, N=10, R=2000, seed=1
+Silhouette score: 0.0943
+Average AF:          1.012476
+Recall@10:           0.830000 (83.0%)
+QPS:                 23364.49 queries/sec
+Avg approx time:     0.000043 sec
+Avg exact time:      0.000228 sec
+Speedup:             5.32x
+
+
+=== mnist_kclusters_50 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 21258.50 queries/sec
+Avg approx time:     0.000047 sec
+Avg exact time:      0.000202 sec
+Speedup:             4.30x
+
+
+=== mnist_kclusters_75 ===
+Parameters: kclusters=75, nprobe=7, N=10, R=2000, seed=1
+Silhouette score: 0.0815
+Average AF:          1.002900
+Recall@10:           0.936000 (93.6%)
+QPS:                 17117.43 queries/sec
+Avg approx time:     0.000058 sec
+Avg exact time:      0.000189 sec
+Speedup:             3.23x
+
+
+=== mnist_kclusters_100 ===
+Parameters: kclusters=100, nprobe=10, N=10, R=2000, seed=1
+Silhouette score: 0.0749
+Average AF:          1.001070
+Recall@10:           0.968000 (96.8%)
+QPS:                 15408.32 queries/sec
+Avg approx time:     0.000065 sec
+Avg exact time:      0.000196 sec
+Speedup:             3.03x
+
+
+=== mnist_nprobe_1 ===
+Parameters: kclusters=50, nprobe=1, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.092122
+Recall@10:           0.481841 (48.2%)
+QPS:                 40096.23 queries/sec
+Avg approx time:     0.000025 sec
+Avg exact time:      0.000190 sec
+Speedup:             7.63x
+
+
+=== mnist_nprobe_3 ===
+Parameters: kclusters=50, nprobe=3, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.014033
+Recall@10:           0.790000 (79.0%)
+QPS:                 28280.54 queries/sec
+Avg approx time:     0.000035 sec
+Avg exact time:      0.000185 sec
+Speedup:             5.23x
+
+
+=== mnist_nprobe_5 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 22094.56 queries/sec
+Avg approx time:     0.000045 sec
+Avg exact time:      0.000188 sec
+Speedup:             4.15x
+
+
+=== mnist_nprobe_10 ===
+Parameters: kclusters=50, nprobe=10, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.000485
+Recall@10:           0.978000 (97.8%)
+QPS:                 14806.04 queries/sec
+Avg approx time:     0.000068 sec
+Avg exact time:      0.000187 sec
+Speedup:             2.77x
+
+
+=== mnist_nprobe_15 ===
+Parameters: kclusters=50, nprobe=15, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.000047
+Recall@10:           0.994000 (99.4%)
+QPS:                 10620.22 queries/sec
+Avg approx time:     0.000094 sec
+Avg exact time:      0.000245 sec
+Speedup:             2.61x
+
+
+=== mnist_nprobe_20 ===
+Parameters: kclusters=50, nprobe=20, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.000047
+Recall@10:           0.994000 (99.4%)
+QPS:                 9072.76 queries/sec
+Avg approx time:     0.000110 sec
+Avg exact time:      0.000189 sec
+Speedup:             1.71x
+
+
+=== mnist_N_1 ===
+Parameters: kclusters=50, nprobe=5, N=1, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.000300
+Recall@1:           0.980000 (98.0%)
+QPS:                 22904.26 queries/sec
+Avg approx time:     0.000044 sec
+Avg exact time:      0.000189 sec
+Speedup:             4.32x
+
+
+=== mnist_N_5 ===
+Parameters: kclusters=50, nprobe=5, N=5, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.002268
+Recall@5:           0.952000 (95.2%)
+QPS:                 21663.78 queries/sec
+Avg approx time:     0.000046 sec
+Avg exact time:      0.000190 sec
+Speedup:             4.12x
+
+
+=== mnist_N_10 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 22351.36 queries/sec
+Avg approx time:     0.000045 sec
+Avg exact time:      0.000189 sec
+Speedup:             4.23x
+
+
+=== mnist_N_20 ===
+Parameters: kclusters=50, nprobe=5, N=20, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.006982
+Recall@20:           0.851000 (85.1%)
+QPS:                 21815.01 queries/sec
+Avg approx time:     0.000046 sec
+Avg exact time:      0.000189 sec
+Speedup:             4.13x
+
+
+=== mnist_N_50 ===
+Parameters: kclusters=50, nprobe=5, N=50, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.026788
+Recall@50:           0.697822 (69.8%)
+QPS:                 22222.22 queries/sec
+Avg approx time:     0.000045 sec
+Avg exact time:      0.000187 sec
+Speedup:             4.16x
+
+
+=== mnist_N_100 ===
+Parameters: kclusters=50, nprobe=5, N=100, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.047441
+Recall@100:           0.614865 (61.5%)
+QPS:                 22007.04 queries/sec
+Avg approx time:     0.000045 sec
+Avg exact time:      0.000193 sec
+Speedup:             4.26x
+
+
+=== mnist_seed_1 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 22241.99 queries/sec
+Avg approx time:     0.000045 sec
+Avg exact time:      0.000189 sec
+Speedup:             4.21x
+
+
+=== mnist_seed_42 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=2000, seed=42
+Silhouette score: 0.0689
+Average AF:          1.004718
+Recall@10:           0.900000 (90.0%)
+QPS:                 21815.01 queries/sec
+Avg approx time:     0.000046 sec
+Avg exact time:      0.000185 sec
+Speedup:             4.03x
+
+
+=== mnist_seed_123 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=2000, seed=123
+Silhouette score: 0.0851
+Average AF:          1.003585
+Recall@10:           0.920000 (92.0%)
+QPS:                 24131.27 queries/sec
+Avg approx time:     0.000041 sec
+Avg exact time:      0.000189 sec
+Speedup:             4.57x
+
+
+=== mnist_seed_999 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=2000, seed=999
+Silhouette score: 0.0859
+Average AF:          1.007179
+Recall@10:           0.848000 (84.8%)
+QPS:                 23116.04 queries/sec
+Avg approx time:     0.000043 sec
+Avg exact time:      0.000188 sec
+Speedup:             4.35x
+
+
+=== mnist_seed_2025 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=2000, seed=2025
+Silhouette score: 0.0789
+Average AF:          1.006407
+Recall@10:           0.888000 (88.8%)
+QPS:                 23191.09 queries/sec
+Avg approx time:     0.000043 sec
+Avg exact time:      0.000186 sec
+Speedup:             4.31x
+
+
+=== mnist_R_500 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=500, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 22251.89 queries/sec
+Avg approx time:     0.000045 sec
+Avg exact time:      0.000192 sec
+Speedup:             4.28x
+
+
+=== mnist_R_1000 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=1000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 20850.71 queries/sec
+Avg approx time:     0.000048 sec
+Avg exact time:      0.000197 sec
+Speedup:             4.12x
+
+
+=== mnist_R_1500 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=1500, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 22222.22 queries/sec
+Avg approx time:     0.000045 sec
+Avg exact time:      0.000192 sec
+Speedup:             4.27x
+
+
+=== mnist_R_2000 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 22441.65 queries/sec
+Avg approx time:     0.000045 sec
+Avg exact time:      0.000189 sec
+Speedup:             4.24x
+
+
+=== mnist_R_3000 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=3000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 21523.89 queries/sec
+Avg approx time:     0.000046 sec
+Avg exact time:      0.000196 sec
+Speedup:             4.21x
+
+
+=== mnist_R_5000 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=5000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 22553.00 queries/sec
+Avg approx time:     0.000044 sec
+Avg exact time:      0.000186 sec
+Speedup:             4.20x
+
+
+=== mnist_config_fast ===
+Parameters: kclusters=20, nprobe=2, N=10, R=2000, seed=1
+Silhouette score: 0.1032
+Average AF:          1.012481
+Recall@10:           0.816000 (81.6%)
+QPS:                 30525.03 queries/sec
+Avg approx time:     0.000033 sec
+Avg exact time:      0.000184 sec
+Speedup:             5.63x
+
+
+=== mnist_config_balanced ===
+Parameters: kclusters=50, nprobe=5, N=10, R=2000, seed=1
+Silhouette score: 0.0827
+Average AF:          1.003724
+Recall@10:           0.910000 (91.0%)
+QPS:                 21891.42 queries/sec
+Avg approx time:     0.000046 sec
+Avg exact time:      0.000200 sec
+Speedup:             4.39x
+
+
+=== mnist_config_accurate ===
+Parameters: kclusters=100, nprobe=20, N=10, R=2000, seed=1
+Silhouette score: 0.0749
+Average AF:          1.000179
+Recall@10:           0.992000 (99.2%)
+QPS:                 10926.57 queries/sec
+Avg approx time:     0.000092 sec
+Avg exact time:      0.000194 sec
+Speedup:             2.12x
+
+
+=== sift_kclusters_50 ===
+Parameters: kclusters=50, nprobe=5, N=10, R=200, seed=1
+Silhouette score: 0.0433
+Average AF:          1.003138
+Recall@10:           0.928701 (92.9%)
+QPS:                 7596.36 queries/sec
+Avg approx time:     0.000132 sec
+Avg exact time:      0.001086 sec
+Speedup:             8.25x
+
+
+=== sift_kclusters_100 ===
+Parameters: kclusters=100, nprobe=10, N=10, R=200, seed=1
+Silhouette score: 0.0361
+Average AF:          1.001574
+Recall@10:           0.959000 (95.9%)
+QPS:                 7163.63 queries/sec
+Avg approx time:     0.000140 sec
+Avg exact time:      0.001082 sec
+Speedup:             7.75x
+
+
+=== sift_kclusters_150 ===
+Parameters: kclusters=150, nprobe=15, N=10, R=200, seed=1
+Silhouette score: 0.0372
+Average AF:          1.000953
+Recall@10:           0.971601 (97.2%)
+QPS:                 6944.20 queries/sec
+Avg approx time:     0.000144 sec
+Avg exact time:      0.001086 sec
+Speedup:             7.54x
+
+
+=== sift_kclusters_200 ===
+Parameters: kclusters=200, nprobe=20, N=10, R=200, seed=1
+Silhouette score: 0.0402
+Average AF:          1.000660
+Recall@10:           0.978101 (97.8%)
+QPS:                 6198.55 queries/sec
+Avg approx time:     0.000161 sec
+Avg exact time:      0.001145 sec
+Speedup:             7.10x
+
+
+=== sift_kclusters_300 ===
+Parameters: kclusters=300, nprobe=30, N=10, R=200, seed=1
+Silhouette score: 0.0416
+Average AF:          1.000382
+Recall@10:           0.987200 (98.7%)
+QPS:                 5983.37 queries/sec
+Avg approx time:     0.000167 sec
+Avg exact time:      0.001102 sec
+Speedup:             6.59x
+
+
+=== sift_nprobe_1 ===
+Parameters: kclusters=100, nprobe=1, N=10, R=200, seed=1
+Silhouette score: 0.0361
+Average AF:          1.054615
+Recall@10:           0.447700 (44.8%)
+QPS:                 46217.13 queries/sec
+Avg approx time:     0.000022 sec
+Avg exact time:      0.001113 sec
+Speedup:             51.44x
+
+
+=== sift_nprobe_5 ===
+Parameters: kclusters=100, nprobe=5, N=10, R=200, seed=1
+Silhouette score: 0.0361
+Average AF:          1.006499
+Recall@10:           0.859701 (86.0%)
+QPS:                 13521.55 queries/sec
+Avg approx time:     0.000074 sec
+Avg exact time:      0.001115 sec
+Speedup:             15.07x
+
+
+=== sift_nprobe_10 ===
+Parameters: kclusters=100, nprobe=10, N=10, R=200, seed=1
+Silhouette score: 0.0361
+Average AF:          1.001574
+Recall@10:           0.959000 (95.9%)
+QPS:                 7025.04 queries/sec
+Avg approx time:     0.000142 sec
+Avg exact time:      0.001120 sec
+Speedup:             7.87x
+
+
+=== sift_nprobe_20 ===
+Parameters: kclusters=100, nprobe=20, N=10, R=200, seed=1
+Silhouette score: 0.0361
+Average AF:          1.000124
+Recall@10:           0.996500 (99.7%)
+QPS:                 3545.40 queries/sec
+Avg approx time:     0.000282 sec
+Avg exact time:      0.001140 sec
+Speedup:             4.04x
+
+
+=== sift_nprobe_30 ===
+Parameters: kclusters=100, nprobe=30, N=10, R=200, seed=1
+Silhouette score: 0.0361
+Average AF:          1.000000
+Recall@10:           1.000000 (100.0%)
+QPS:                 2491.72 queries/sec
+Avg approx time:     0.000401 sec
+Avg exact time:      0.001120 sec
+Speedup:             2.79x
+
+
+=== sift_nprobe_50 ===
+Parameters: kclusters=100, nprobe=50, N=10, R=200, seed=1
+Silhouette score: 0.0361
+Average AF:          1.000000
+Recall@10:           1.000000 (100.0%)
+QPS:                 1650.08 queries/sec
+Avg approx time:     0.000606 sec
+Avg exact time:      0.001123 sec
+Speedup:             1.85x
+
+
+=== sift_config_fast ===
+Parameters: kclusters=50, nprobe=5, N=10, R=200, seed=1
+Silhouette score: 0.0433
+Average AF:          1.003138
+Recall@10:           0.928701 (92.9%)
+QPS:                 7265.96 queries/sec
+Avg approx time:     0.000138 sec
+Avg exact time:      0.001115 sec
+Speedup:             8.10x
+
+
+=== sift_config_balanced ===
+Parameters: kclusters=100, nprobe=10, N=10, R=200, seed=1
+Silhouette score: 0.0361
+Average AF:          1.001574
+Recall@10:           0.959000 (95.9%)
+QPS:                 6902.36 queries/sec
+Avg approx time:     0.000145 sec
+Avg exact time:      0.001131 sec
+Speedup:             7.81x
+
+
+=== sift_config_accurate ===
+Parameters: kclusters=200, nprobe=30, N=10, R=200, seed=1
+Silhouette score: 0.0402
+Average AF:          1.000174
+Recall@10:           0.994201 (99.4%)
+QPS:                 4550.52 queries/sec
+Avg approx time:     0.000220 sec
+Avg exact time:      0.001114 sec
+Speedup:             5.07x
+
+
+========================================
+Experiments completed at: Sat Nov  1 20:18:05 EET 2025
