@@ -10,6 +10,7 @@ import time
 import subprocess
 import os
 import tempfile
+import struct
 from Bio import SeqIO
 from collections import defaultdict
 
@@ -53,7 +54,7 @@ class ProteinSearchBenchmark:
     
     def setup_temp_files(self):
         """Create temporary .fvecs files for C programs"""
-        import struct
+
         
         # Data file
         self.temp_data = tempfile.NamedTemporaryFile(suffix='.fvecs', delete=False)
@@ -80,24 +81,40 @@ class ProteinSearchBenchmark:
             os.unlink(self.temp_data.name)
         except:
             pass
+
+    def load_id_mapping(self):
         """Load sequence ID to index mapping"""
+        # Preferred mapping file: <data_basename>_ids.txt
         mapping_path = self.data_path.replace(".fvecs", "_ids.txt").replace(".dat", "_ids.txt")
-        
+
         self.id_to_idx = {}
         self.idx_to_id = {}
-        
+
         if os.path.exists(mapping_path):
             with open(mapping_path, "r") as f:
                 for line in f:
-                    idx, seq_id = line.strip().split("\t")
-                    idx = int(idx)
+                    parts = line.strip().split("\t")
+                    if len(parts) != 2:
+                        continue
+                    idx_str, seq_id = parts
+                    idx = int(idx_str)
                     self.id_to_idx[seq_id] = idx
                     self.idx_to_id[idx] = seq_id
-            print(f"[SEARCH] Loaded {len(self.id_to_idx)} ID mappings")
+            print(f"[SEARCH] Loaded {len(self.id_to_idx)} ID mappings from {mapping_path}")
         else:
-            print("[SEARCH] Warning: No ID mapping found, using indices")
-            for i in range(self.X.shape[0]):
-                self.idx_to_id[i] = f"seq_{i}"
+            # Fallback: if you have ids.txt (one ID per line), use that
+            if os.path.exists("ids.txt"):
+                with open("ids.txt", "r") as f:
+                    ids = [line.strip() for line in f if line.strip()]
+                for i, seq_id in enumerate(ids[:self.n]):
+                    self.id_to_idx[seq_id] = i
+                    self.idx_to_id[i] = seq_id
+                print(f"[SEARCH] Loaded {len(self.id_to_idx)} ID mappings from ids.txt")
+            else:
+                print("[SEARCH] Warning: No ID mapping found, using indices")
+                for i in range(self.n):
+                    self.idx_to_id[i] = f"seq_{i}"
+
     
     def load_queries(self):
         """Load query sequences and generate embeddings"""
@@ -117,7 +134,7 @@ class ProteinSearchBenchmark:
             base_path + ".fasta",
             base_path + ".fa",
             "swissprot.fasta",
-            "swissprot_small_small.fasta"
+            "swissprot_small.fasta"
         ]
         
         self.blast_db_fasta = None
@@ -428,61 +445,61 @@ class ProteinSearchBenchmark:
     def parse_c_output(self, output_file):
         """Parse C program output file"""
         results = []
-        
+
         try:
             with open(output_file, 'r') as f:
                 lines = f.readlines()
-            
+
             i = 0
             while i < len(lines):
                 line = lines[i].strip()
-                
-                # Look for "Nearest neighbor-X: Y" pattern
+
                 if line.startswith("Nearest neighbor-"):
-                    # Extract index
                     parts = line.split(":")
                     if len(parts) >= 2:
                         idx_str = parts[1].strip()
-                        
-                        # Handle different formats: "123", "image_id_123", etc.
+
                         if "image_id_" in idx_str:
                             idx = int(idx_str.replace("image_id_", ""))
                         else:
                             idx = int(idx_str)
-                        
-                        # Get distance from next line
+
                         i += 1
                         if i < len(lines) and "distanceApproximate:" in lines[i]:
                             dist_line = lines[i].strip()
                             dist = float(dist_line.split(":")[1].strip())
-                            
+
                             results.append({
                                 'index': idx,
                                 'id': self.idx_to_id.get(idx, f"seq_{idx}"),
                                 'distance': dist
                             })
-                
+
                 i += 1
-            
+
             return results
-        
+
         except Exception as e:
             print(f"[SEARCH] Error parsing C output: {e}")
             return []
-        """Exact nearest neighbor search"""
+
+
+    def brute_force_search(self, query):
+        """Exact nearest neighbor search (fallback)"""
         distances = L2_distance_batch(self.X, query)
         sorted_idx = np.argsort(distances)[:self.N]
-        
+
         results = []
         for idx in sorted_idx:
+            idx = int(idx)
             results.append({
-                'index': int(idx),
+                'index': idx,
                 'id': self.idx_to_id.get(idx, f"seq_{idx}"),
                 'distance': float(distances[idx])
             })
-        
+
         return results
-    
+
     def compute_recall(self, ann_results, blast_results):
         """Compute Recall@N vs BLAST"""
         if not blast_results:
@@ -632,39 +649,90 @@ class ProteinSearchBenchmark:
         
         print(f"[SEARCH] Results written to {self.output_path}")
 
-
 def main():
-    parser = argparse.ArgumentParser(description="Protein ANN Search Benchmark")
-    parser.add_argument("-d", "--data", required=True, help="Embedding data file (.fvecs)")
-    parser.add_argument("-q", "--query", required=True, help="Query FASTA file")
-    parser.add_argument("-o", "--output", required=True, help="Output results file")
-    parser.add_argument("-method", choices=["all", "lsh", "hypercube", "neural", "ivf", "ivfpq"],
-                        default="all", help="ANN method to use")
-    parser.add_argument("-N", type=int, default=50, help="Number of nearest neighbors")
-    parser.add_argument("--index", default="./protein_index", help="Neural LSH index directory")
+    parser = argparse.ArgumentParser(
+        description="Protein Remote Homology Detection - ANN Benchmark",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Test all methods
+  python protein_search.py -d swissprot.fvecs -q queries.fasta -o results.txt
+  
+  # Test only LSH
+  python protein_search.py -d swissprot.fvecs -q queries.fasta -o results.txt -method lsh
+  
+  # Custom parameters
+  python protein_search.py -d swissprot.fvecs -q queries.fasta -o results.txt \\
+    --lsh_k 15 --lsh_L 12 --ivf_nprobe 20
+        """
+    )
     
-    # Method-specific parameters
-    parser.add_argument("--lsh_k", type=int, default=12, help="LSH: hash functions per table")
-    parser.add_argument("--lsh_L", type=int, default=10, help="LSH: number of tables")
-    parser.add_argument("--lsh_w", type=float, default=4.0, help="LSH: bucket width")
+    # Required arguments
+    parser.add_argument("-d", "--data", required=True, 
+                       help="Embedding data file (.fvecs)")
+    parser.add_argument("-q", "--query", required=True, 
+                       help="Query FASTA file")
+    parser.add_argument("-o", "--output", required=True, 
+                       help="Output results file")
     
-    parser.add_argument("--hc_kproj", type=int, default=14, help="Hypercube: projection dimensions")
-    parser.add_argument("--hc_w", type=float, default=4.0, help="Hypercube: bucket width")
-    parser.add_argument("--hc_M", type=int, default=10000, help="Hypercube: max candidates")
-    parser.add_argument("--hc_probes", type=int, default=100, help="Hypercube: vertices to probe")
+    # Method selection
+    parser.add_argument("-method", 
+                       choices=["all", "lsh", "hypercube", "neural", "ivf", "ivfpq"],
+                       default="all", 
+                       help="ANN method to use (default: all)")
+    parser.add_argument("-N", type=int, default=50, 
+                       help="Number of nearest neighbors (default: 50)")
+    parser.add_argument("--index", default="./protein_index", 
+                       help="Neural LSH index directory")
     
-    parser.add_argument("--ivf_kclusters", type=int, default=None, help="IVF: number of clusters (default: sqrt(n))")
-    parser.add_argument("--ivf_nprobe", type=int, default=15, help="IVF: clusters to search")
+    # LSH parameters
+    lsh_group = parser.add_argument_group('LSH parameters')
+    lsh_group.add_argument("--lsh_k", type=int, default=12, 
+                          help="Hash functions per table (default: 12)")
+    lsh_group.add_argument("--lsh_L", type=int, default=10, 
+                          help="Number of hash tables (default: 10)")
+    lsh_group.add_argument("--lsh_w", type=float, default=4.0, 
+                          help="Bucket width (default: 4.0)")
     
-    parser.add_argument("--ivfpq_kclusters", type=int, default=None, help="IVFPQ: number of clusters")
-    parser.add_argument("--ivfpq_nprobe", type=int, default=20, help="IVFPQ: clusters to search")
-    parser.add_argument("--ivfpq_M", type=int, default=16, help="IVFPQ: number of subspaces")
-    parser.add_argument("--ivfpq_nbits", type=int, default=8, help="IVFPQ: bits per subspace")
+    # Hypercube parameters
+    hc_group = parser.add_argument_group('Hypercube parameters')
+    hc_group.add_argument("--hc_kproj", type=int, default=14, 
+                         help="Projection dimensions (default: 14)")
+    hc_group.add_argument("--hc_w", type=float, default=4.0, 
+                         help="Bucket width (default: 4.0)")
+    hc_group.add_argument("--hc_M", type=int, default=10000, 
+                         help="Max candidates (default: 10000)")
+    hc_group.add_argument("--hc_probes", type=int, default=100, 
+                         help="Vertices to probe (default: 100)")
     
-    parser.add_argument("--neural_m", type=int, default=100, help="Neural LSH: number of partitions")
-    parser.add_argument("--neural_T", type=int, default=5, help="Neural LSH: multi-probe parameter")
-    parser.add_argument("--neural_layers", type=int, default=3, help="Neural LSH: MLP layers")
-    parser.add_argument("--neural_nodes", type=int, default=64, help="Neural LSH: hidden layer size")
+    # IVF parameters
+    ivf_group = parser.add_argument_group('IVF parameters')
+    ivf_group.add_argument("--ivf_kclusters", type=int, default=None, 
+                          help="Number of clusters (default: sqrt(n))")
+    ivf_group.add_argument("--ivf_nprobe", type=int, default=15, 
+                          help="Clusters to search (default: 15)")
+    
+    # IVFPQ parameters
+    ivfpq_group = parser.add_argument_group('IVFPQ parameters')
+    ivfpq_group.add_argument("--ivfpq_kclusters", type=int, default=None, 
+                            help="Number of clusters (default: sqrt(n))")
+    ivfpq_group.add_argument("--ivfpq_nprobe", type=int, default=20, 
+                            help="Clusters to search (default: 20)")
+    ivfpq_group.add_argument("--ivfpq_M", type=int, default=16, 
+                            help="Number of subspaces (default: 16)")
+    ivfpq_group.add_argument("--ivfpq_nbits", type=int, default=8, 
+                            help="Bits per subspace (default: 8)")
+    
+    # Neural LSH parameters
+    neural_group = parser.add_argument_group('Neural LSH parameters')
+    neural_group.add_argument("--neural_m", type=int, default=100, 
+                             help="Number of partitions (default: 100)")
+    neural_group.add_argument("--neural_T", type=int, default=5, 
+                             help="Multi-probe parameter (default: 5)")
+    neural_group.add_argument("--neural_layers", type=int, default=3, 
+                             help="MLP layers (default: 3)")
+    neural_group.add_argument("--neural_nodes", type=int, default=64, 
+                             help="Hidden layer size (default: 64)")
     
     args = parser.parse_args()
     
