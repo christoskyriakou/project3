@@ -95,6 +95,7 @@ int compareNeighbors(const void* a,const void* b){ // συγκρίνο
     return 0;
 }
 int load_sift_vectors(const char* filename,double** dataset,int *num_vectors,int *dim_out) {
+    
     FILE *f=fopen(filename,"rb"); // Ανοίγουμε το binary αρχείο αν δεν ανοίξει επιστρέφεται σφάλμα
     if(!f){ 
         perror("ERROR when opening the SIFT file");

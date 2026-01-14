@@ -128,12 +128,19 @@ Vector** load_sift(const char* filename, int* count, int* dimension, int isQuery
     *count = file_size / bytes_per_vector;
     
     // Less vectors than original file to save time
+    int total = (int)(file_size / bytes_per_vector);
+    *count = total;
+
     if (isQuery) {
-        *count = 1000;
+        // for query files like one_query.fvecs, keep all (usually very small)
+        // but if it is a big query file, optionally cap:
+        // *count = total < 1000 ? total : 1000;
+        *count = total;
     } else {
-        *count = 10000;
+        // for dataset, keep all available
+        *count = total;
     }
-    
+        
     
     
     printf("Loading SIFT: %d vectors of dimension %d\n", *count, *dimension);
