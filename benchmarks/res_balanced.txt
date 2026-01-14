@@ -1,0 +1,948 @@
+
+Query Protein: A0A009I3Y5
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.424          | 2      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.060
+ivf              | 14.1515        | 0      | 0.000
+ivfpq            | 12.9146        | 0      | 0.000
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|A5UG81|KDKA_HAEIG | 0.3        |    0.0% | No         | -
+2     | sp|P44033|Y665_HAEIN | 0.4        |    0.0% | No         | -
+3     | sp|P14181|LICA2_HAEIF | 0.4        |    0.0% | No         | -
+4     | sp|Q8EKA0|SELU_SHEON | 0.4        |    0.0% | No         | -
+5     | sp|A3DA85|SELU_SHEB5 | 0.4        |    0.0% | No         | -
+6     | sp|Q4QLU9|RLMC_HAEI8 | 0.4        |    0.0% | No         | -
+7     | sp|Q8EJX6|SELO_SHEON | 0.4        |    0.0% | No         | -
+8     | sp|A1RPL0|SELO_SHESW | 0.4        |    0.0% | No         | -
+9     | sp|A0L1Z0|SELO_SHESA | 0.4        |    0.0% | No         | -
+10    | sp|P24362|KRB2_VACCW | 0.4        |   26.8% | Yes        | Remote homolog? (Twilight Zone)
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P44033|Y665_HAEIN | 0.4        |    0.0% | No         | -
+2     | sp|A3DA85|SELU_SHEB5 | 0.4        |    0.0% | No         | -
+3     | sp|Q4QLU9|RLMC_HAEI8 | 0.4        |    0.0% | No         | -
+4     | sp|Q8EJX6|SELO_SHEON | 0.4        |    0.0% | No         | -
+5     | sp|P43954|Y152_HAEIN | 0.4        |    0.0% | No         | -
+6     | sp|Q04N32|RECO_STRP2 | 0.4        |    0.0% | No         | -
+7     | sp|Q74Q56|SGRR_YERPE | 0.4        |    0.0% | No         | -
+8     | sp|Q1CGK9|SULA_YERPN | 0.4        |    0.0% | No         | -
+9     | sp|Q8X8V8|MTFA_ECO57 | 0.4        |    0.0% | No         | -
+10    | sp|A2BRQ6|SASA_PROMS | 0.4        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P44033|Y665_HAEIN | 0.4        |    0.0% | No         | -
+2     | sp|A3DA85|SELU_SHEB5 | 0.4        |    0.0% | No         | -
+3     | sp|Q74Q56|SGRR_YERPE | 0.4        |    0.0% | No         | -
+4     | sp|Q4QLU9|RLMC_HAEI8 | 0.4        |    0.0% | No         | -
+5     | sp|A7ZZ64|THIK_ECOHS | 0.4        |    0.0% | No         | -
+6     | sp|Q1CGK9|SULA_YERPN | 0.4        |    0.0% | No         | -
+7     | sp|Q8EJX6|SELO_SHEON | 0.4        |    0.0% | No         | -
+8     | sp|A7FGL1|MNMC_YERP3 | 0.4        |    0.0% | No         | -
+9     | sp|C0MEP5|PEPX_STRS7 | 0.4        |    0.0% | No         | -
+10    | sp|Q1CGA8|RLMC_YERPN | 0.4        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|C4K189|SECB_RICPU | 15631557632.0 |    0.0% | No         | -
+2     | sp|Q7LKV3|SEN15_SCHPO | 16509642752.0 |    0.0% | No         | -
+3     | sp|Q85FV1|RK5_CYAM1  | 16907684864.0 |    0.0% | No         | -
+4     | sp|Q5UP98|YL027_MIMIV | 17063665664.0 |    0.0% | No         | -
+5     | sp|C4K392|SEQA_HAMD5 | 17064204288.0 |    0.0% | No         | -
+6     | sp|O20273|RR4_PATFR  | 17165671424.0 |    0.0% | No         | -
+7     | sp|Q9WXI5|PTHP_BUCAI | 17344825344.0 |    0.0% | No         | -
+8     | sp|Q8DIS7|RBS_THEVB  | 17442830336.0 |    0.0% | No         | -
+9     | sp|Q9SMG1|RR4_FUNHY  | 17474451456.0 |    0.0% | No         | -
+10    | sp|B4LPP8|AKTP2_DROVI | 17573646336.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A009PCK4
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.363          | 2      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.040
+ivf              | 14.1515        | 0      | 0.000
+ivfpq            | 12.9146        | 0      | 0.000
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|A5UG81|KDKA_HAEIG | 0.3        |    0.0% | No         | -
+2     | sp|P44033|Y665_HAEIN | 0.4        |    0.0% | No         | -
+3     | sp|P14181|LICA2_HAEIF | 0.4        |    0.0% | No         | -
+4     | sp|Q8EKA0|SELU_SHEON | 0.4        |    0.0% | No         | -
+5     | sp|A3DA85|SELU_SHEB5 | 0.4        |    0.0% | No         | -
+6     | sp|Q4QLU9|RLMC_HAEI8 | 0.4        |    0.0% | No         | -
+7     | sp|Q8EJX6|SELO_SHEON | 0.4        |    0.0% | No         | -
+8     | sp|A1RPL0|SELO_SHESW | 0.4        |    0.0% | No         | -
+9     | sp|P24362|KRB2_VACCW | 0.4        |   27.0% | Yes        | Remote homolog? (Twilight Zone)
+10    | sp|A0L1Z0|SELO_SHESA | 0.4        |    0.0% | No         | -
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P44033|Y665_HAEIN | 0.4        |    0.0% | No         | -
+2     | sp|A3DA85|SELU_SHEB5 | 0.4        |    0.0% | No         | -
+3     | sp|Q4QLU9|RLMC_HAEI8 | 0.4        |    0.0% | No         | -
+4     | sp|Q8EJX6|SELO_SHEON | 0.4        |    0.0% | No         | -
+5     | sp|P43954|Y152_HAEIN | 0.4        |    0.0% | No         | -
+6     | sp|Q04N32|RECO_STRP2 | 0.4        |    0.0% | No         | -
+7     | sp|Q74Q56|SGRR_YERPE | 0.4        |    0.0% | No         | -
+8     | sp|A2BRQ6|SASA_PROMS | 0.4        |    0.0% | No         | -
+9     | sp|Q8X8V8|MTFA_ECO57 | 0.4        |    0.0% | No         | -
+10    | sp|B0BTT2|NDPA_ACTPJ | 0.4        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P44033|Y665_HAEIN | 0.4        |    0.0% | No         | -
+2     | sp|A3DA85|SELU_SHEB5 | 0.4        |    0.0% | No         | -
+3     | sp|Q74Q56|SGRR_YERPE | 0.4        |    0.0% | No         | -
+4     | sp|Q4QLU9|RLMC_HAEI8 | 0.4        |    0.0% | No         | -
+5     | sp|A7ZZ64|THIK_ECOHS | 0.4        |    0.0% | No         | -
+6     | sp|Q1CGK9|SULA_YERPN | 0.4        |    0.0% | No         | -
+7     | sp|Q8EJX6|SELO_SHEON | 0.4        |    0.0% | No         | -
+8     | sp|A7FGL1|MNMC_YERP3 | 0.4        |    0.0% | No         | -
+9     | sp|C0MEP5|PEPX_STRS7 | 0.4        |    0.0% | No         | -
+10    | sp|Q9PJD2|UNG_CHLMU  | 0.4        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|C4K189|SECB_RICPU | 15488400384.0 |    0.0% | No         | -
+2     | sp|Q7LKV3|SEN15_SCHPO | 15799088128.0 |    0.0% | No         | -
+3     | sp|Q5UP98|YL027_MIMIV | 16364583936.0 |    0.0% | No         | -
+4     | sp|Q85FV1|RK5_CYAM1  | 16921917440.0 |    0.0% | No         | -
+5     | sp|C4K392|SEQA_HAMD5 | 17215817728.0 |    0.0% | No         | -
+6     | sp|Q9WXI5|PTHP_BUCAI | 17309442048.0 |    0.0% | No         | -
+7     | sp|B4LPP8|AKTP2_DROVI | 17313554432.0 |    0.0% | No         | -
+8     | sp|P0C983|DPOLX_ASFP4 | 17317244928.0 |    0.0% | No         | -
+9     | sp|A7WYX0|RXL7_STAA1 | 17464852480.0 |    0.0% | No         | -
+10    | sp|P42494|DPOLX_ASFB7 | 17569110016.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A001
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.639          | 1      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.120
+ivf              | 14.1515        | 0      | 0.060
+ivfpq            | 12.9146        | 0      | 0.080
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P9WQJ3|FATRP_MYCTU | 0.3        |   25.3% | Yes        | Remote homolog? (Twilight Zone)
+2     | sp|Q13BH6|NDVA_RHOPS | 0.3        |   32.7% | Yes        | -
+3     | sp|Q03024|APRD_PSEAE | 0.3        |   38.5% | Yes        | -
+4     | sp|A0K739|SSUB1_BURCH | 0.3        |    0.0% | No         | -
+5     | sp|Q51719|YCOBA_PROFR | 0.4        |    0.0% | No         | -
+6     | sp|Q8P8W4|MSBA_XANCP | 0.4        |   36.1% | Yes        | -
+7     | sp|Q3JSR6|SSUB_BURP1 | 0.4        |    0.0% | No         | -
+8     | sp|P23886|CYDC_ECOLI | 0.4        |   32.1% | Yes        | -
+9     | sp|Q21BF6|MODC_RHOPB | 0.4        |    0.0% | No         | -
+10    | sp|Q9NP58|ABCB6_HUMAN | 0.4        |   27.6% | Yes        | Remote homolog? (Twilight Zone)
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q20Z38|NDVA_RHOPB | 0.3        |   23.5% | Yes        | Remote homolog? (Twilight Zone)
+2     | sp|Q51719|YCOBA_PROFR | 0.4        |    0.0% | No         | -
+3     | sp|Q8P8W4|MSBA_XANCP | 0.4        |   36.1% | Yes        | -
+4     | sp|Q21BF6|MODC_RHOPB | 0.4        |    0.0% | No         | -
+5     | sp|P9WGD8|FTSY_MYCTO | 0.5        |    0.0% | No         | -
+6     | sp|P9WMX0|MFTF_MYCTO | 0.5        |    0.0% | No         | -
+7     | sp|Q5P6D5|MACB_AROAE | 0.5        |    0.0% | No         | -
+8     | sp|P9WIL0|PANE_MYCTO | 0.5        |    0.0% | No         | -
+9     | sp|A1UG51|POTA_MYCSK | 0.5        |    0.0% | No         | -
+10    | sp|Q67JX3|ECFA1_SYMTH | 0.5        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q51719|YCOBA_PROFR | 0.3        |    0.0% | No         | -
+2     | sp|Q20Z38|NDVA_RHOPB | 0.4        |   23.5% | Yes        | Remote homolog? (Twilight Zone)
+3     | sp|Q21BF6|MODC_RHOPB | 0.4        |    0.0% | No         | -
+4     | sp|Q8P8W4|MSBA_XANCP | 0.4        |   36.1% | Yes        | -
+5     | sp|P33973|PKN1_MYXXA | 0.5        |    0.0% | No         | -
+6     | sp|Q9HNV0|COFC_HALSA | 0.5        |    0.0% | No         | -
+7     | sp|P9WMX0|MFTF_MYCTO | 0.5        |    0.0% | No         | -
+8     | sp|P9WIL0|PANE_MYCTO | 0.5        |    0.0% | No         | -
+9     | sp|P0DMK6|IRLS_BURPS | 0.5        |    0.0% | No         | -
+10    | sp|Q67LC0|FTSH1_SYMTH | 0.5        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q6N5U3|OPGH_RHOPA | 13946374144.0 |    0.0% | No         | -
+2     | sp|D8QAM0|PFF1_SCHCM | 15159892992.0 |    0.0% | No         | -
+3     | sp|Q9NYG8|KCNK4_HUMAN | 15315681280.0 |    0.0% | No         | -
+4     | sp|G3V8V5|KCNK4_RAT  | 16099525632.0 |    0.0% | No         | -
+5     | sp|B6H1I3|PFF1_PENRW | 16487177216.0 |    0.0% | No         | -
+6     | sp|A2Q9P2|TVP38_ASPNC | 16894186496.0 |    0.0% | No         | -
+7     | sp|C3K816|OPGH_PSEFS | 16900885504.0 |    0.0% | No         | -
+8     | sp|A4R254|PFF1_PYRO7 | 16904364032.0 |    0.0% | No         | -
+9     | sp|P03149|CAPSD_HBVA2 | 17023518720.0 |    0.0% | No         | -
+10    | sp|Q29RK8|CXG2_BOVIN | 17151096832.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A002
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.597          | 1      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.200
+ivf              | 14.1515        | 0      | 0.100
+ivfpq            | 12.9146        | 0      | 0.100
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P9WQJ3|FATRP_MYCTU | 0.3        |   27.7% | Yes        | Remote homolog? (Twilight Zone)
+2     | sp|Q13BH6|NDVA_RHOPS | 0.3        |   29.2% | Yes        | Remote homolog? (Twilight Zone)
+3     | sp|Q03024|APRD_PSEAE | 0.3        |   31.3% | Yes        | -
+4     | sp|P23886|CYDC_ECOLI | 0.4        |   27.8% | Yes        | Remote homolog? (Twilight Zone)
+5     | sp|Q8P8W4|MSBA_XANCP | 0.4        |   27.8% | Yes        | Remote homolog? (Twilight Zone)
+6     | sp|Q51719|YCOBA_PROFR | 0.4        |    0.0% | No         | -
+7     | sp|Q82MV1|SSUB1_STRAW | 0.4        |    0.0% | No         | -
+8     | sp|A0K739|SSUB1_BURCH | 0.4        |    0.0% | No         | -
+9     | sp|A6W3V7|RECF_KINRD | 0.4        |    0.0% | No         | -
+10    | sp|Q9NP58|ABCB6_HUMAN | 0.4        |   31.6% | Yes        | -
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q20Z38|NDVA_RHOPB | 0.4        |   28.3% | Yes        | Remote homolog? (Twilight Zone)
+2     | sp|Q8P8W4|MSBA_XANCP | 0.4        |   27.8% | Yes        | Remote homolog? (Twilight Zone)
+3     | sp|Q51719|YCOBA_PROFR | 0.4        |    0.0% | No         | -
+4     | sp|Q21BF6|MODC_RHOPB | 0.5        |    0.0% | No         | -
+5     | sp|Q67JX3|ECFA1_SYMTH | 0.5        |    0.0% | No         | -
+6     | sp|Q5P6D5|MACB_AROAE | 0.5        |    0.0% | No         | -
+7     | sp|Q4FS42|MSBA_PSYA2 | 0.5        |   27.0% | Yes        | Remote homolog? (Twilight Zone)
+8     | sp|Q3KJQ7|TAUB_PSEPF | 0.5        |    0.0% | No         | -
+9     | sp|C5C0T0|MENG_BEUC1 | 0.5        |    0.0% | No         | -
+10    | sp|A1UG51|POTA_MYCSK | 0.5        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q51719|YCOBA_PROFR | 0.4        |    0.0% | No         | -
+2     | sp|Q20Z38|NDVA_RHOPB | 0.4        |   28.3% | Yes        | Remote homolog? (Twilight Zone)
+3     | sp|Q21BF6|MODC_RHOPB | 0.4        |    0.0% | No         | -
+4     | sp|Q8P8W4|MSBA_XANCP | 0.5        |   27.8% | Yes        | Remote homolog? (Twilight Zone)
+5     | sp|P0DMK6|IRLS_BURPS | 0.5        |    0.0% | No         | -
+6     | sp|Q67JX3|ECFA1_SYMTH | 0.5        |    0.0% | No         | -
+7     | sp|Q5P6D5|MACB_AROAE | 0.5        |    0.0% | No         | -
+8     | sp|Q3KJQ7|TAUB_PSEPF | 0.5        |    0.0% | No         | -
+9     | sp|Q2SB47|HMUV_HAHCH | 0.5        |    0.0% | No         | -
+10    | sp|D1BZ82|MSHA_XYLCX | 0.5        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q6N5U3|OPGH_RHOPA | 12905450496.0 |    0.0% | No         | -
+2     | sp|D8QAM0|PFF1_SCHCM | 14867581952.0 |    0.0% | No         | -
+3     | sp|Q9NYG8|KCNK4_HUMAN | 15029517312.0 |    0.0% | No         | -
+4     | sp|G3V8V5|KCNK4_RAT  | 15520570368.0 |    0.0% | No         | -
+5     | sp|B6H1I3|PFF1_PENRW | 15776928768.0 |    0.0% | No         | -
+6     | sp|A2Q9P2|TVP38_ASPNC | 15825377280.0 |    0.0% | No         | -
+7     | sp|P0C695|CAPSD_HBVA6 | 16073053184.0 |    0.0% | No         | -
+8     | sp|C3K816|OPGH_PSEFS | 16356549632.0 |    0.0% | No         | -
+9     | sp|A4R254|PFF1_PYRO7 | 16377283584.0 |    0.0% | No         | -
+10    | sp|P03149|CAPSD_HBVA2 | 16470028288.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A009HL96
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | -0.228         | 0      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.540
+ivf              | 14.1515        | 0      | 0.060
+ivfpq            | 12.9146        | 0      | 0.080
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q5HI09|GRAR_STAAC | 0.2        |   26.1% | Yes        | Remote homolog? (Twilight Zone)
+2     | sp|P33112|SPAR_BACIU | 0.2        |   30.8% | Yes        | -
+3     | sp|Q99VW2|GRAR_STAAN | 0.2        |   26.1% | Yes        | Remote homolog? (Twilight Zone)
+4     | sp|Q8CQ37|GRAR_STAES | 0.2        |   27.9% | Yes        | Remote homolog? (Twilight Zone)
+5     | sp|Q99RR6|HSSR_STAAM | 0.2        |   31.3% | Yes        | -
+6     | sp|P28257|YCF27_GALSU | 0.2        |   32.8% | Yes        | -
+7     | sp|Q9AE24|RPRY_BACFR | 0.2        |   27.6% | Yes        | Remote homolog? (Twilight Zone)
+8     | sp|A6WZ81|CTRA_BRUA4 | 0.2        |   33.2% | Yes        | -
+9     | sp|P45189|PHOB_HAEIN | 0.2        |   34.2% | Yes        | -
+10    | sp|A0A0H2UQ68|WALR_STRPN | 0.2        |   37.3% | Yes        | -
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q5HI09|GRAR_STAAC | 0.2        |   26.1% | Yes        | Remote homolog? (Twilight Zone)
+2     | sp|G3XCY6|GLTR_PSEAE | 0.4        |   33.5% | Yes        | -
+3     | sp|A6QJN2|NREB_STAAE | 0.5        |    0.0% | No         | -
+4     | sp|O07586|CUER_BACSU | 0.5        |    0.0% | No         | -
+5     | sp|O34994|CCPN_BACSU | 0.5        |    0.0% | No         | -
+6     | sp|A5VUU3|DIVK_BRUO2 | 0.5        |   28.0% | Yes        | Remote homolog? (Twilight Zone)
+7     | sp|B7LLW0|NSRR_ESCF3 | 0.5        |    0.0% | No         | -
+8     | sp|Q2FY80|SRRB_STAA8 | 0.5        |    0.0% | No         | -
+9     | sp|Q6GK52|LYTS_STAAR | 0.5        |    0.0% | No         | -
+10    | sp|A2BRQ6|SASA_PROMS | 0.5        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q5HI09|GRAR_STAAC | 0.2        |   26.1% | Yes        | Remote homolog? (Twilight Zone)
+2     | sp|G3XCY6|GLTR_PSEAE | 0.4        |   33.5% | Yes        | -
+3     | sp|A5VUU3|DIVK_BRUO2 | 0.5        |   28.0% | Yes        | Remote homolog? (Twilight Zone)
+4     | sp|O07586|CUER_BACSU | 0.5        |    0.0% | No         | -
+5     | sp|B7LLW0|NSRR_ESCF3 | 0.5        |    0.0% | No         | -
+6     | sp|P44617|Y293_HAEIN | 0.5        |    0.0% | No         | -
+7     | sp|O34994|CCPN_BACSU | 0.5        |    0.0% | No         | -
+8     | sp|Q6GK52|LYTS_STAAR | 0.5        |    0.0% | No         | -
+9     | sp|P62182|RP28_BACAN | 0.5        |    0.0% | No         | -
+10    | sp|Q6G6T5|SARZ_STAAS | 0.5        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|O88693|CEGT_MOUSE | 8298491392.0 |    0.0% | No         | -
+2     | sp|Q9LZR3|CSLA9_ARATH | 9352559616.0 |    0.0% | No         | -
+3     | sp|Q9LF09|CSLAB_ARATH | 10293363712.0 |    0.0% | No         | -
+4     | sp|Q8NUQ4|CRTQ_STAAW | 10293831680.0 |    0.0% | No         | -
+5     | sp|Q5HCY7|CRTQ_STAAC | 10305540096.0 |    0.0% | No         | -
+6     | sp|Q84W06|CSLAE_ARATH | 10325739520.0 |    0.0% | No         | -
+7     | sp|P72334|NODC_RHIS3 | 10325739520.0 |    0.0% | No         | -
+8     | sp|Q9ZQN8|CSLA7_ARATH | 10511370240.0 |    0.0% | No         | -
+9     | sp|Q84W54|CSLA1_ARATH | 10942541824.0 |    0.0% | No         | -
+10    | sp|Q80YT9|RBM11_MOUSE | 10945627136.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A009HLV9
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.457          | 2      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.320
+ivf              | 14.1515        | 0      | 0.080
+ivfpq            | 12.9146        | 0      | 0.080
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P28787|NTRC_PROHU | 0.1        |   62.5% | Yes        | -
+2     | sp|O87455|LUXO_VIBC3 | 0.2        |   39.6% | Yes        | -
+3     | sp|Q06065|ATOC_ECOLI | 0.2        |   41.3% | Yes        | -
+4     | sp|Q3K999|SFNR_PSEPF | 0.2        |   37.7% | Yes        | -
+5     | sp|A1KU52|RUVB_NEIMF | 0.2        |    0.0% | No         | -
+6     | sp|P23747|ALGB_PSEAE | 0.2        |   40.0% | Yes        | -
+7     | sp|P59402|NORR_SHIFL | 0.2        |   40.3% | Yes        | -
+8     | sp|P37931|HRPS_PSESY | 0.2        |   41.6% | Yes        | -
+9     | sp|A8A3I6|NORR_ECOHS | 0.2        |   38.2% | Yes        | -
+10    | sp|Q8EEF3|RUVB_SHEON | 0.2        |    0.0% | No         | -
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q3K999|SFNR_PSEPF | 0.2        |   37.7% | Yes        | -
+2     | sp|A8A3I6|NORR_ECOHS | 0.2        |   38.2% | Yes        | -
+3     | sp|B5F3J7|RUVB_SALA4 | 0.3        |    0.0% | No         | -
+4     | sp|P0A812|RUVB_ECOLI | 0.3        |    0.0% | No         | -
+5     | sp|P71229|HYFR_ECOLI | 0.3        |   38.6% | Yes        | -
+6     | sp|Q15RN6|RUVB_PSEA6 | 0.3        |    0.0% | No         | -
+7     | sp|Q7WGB3|RUVB_BORBR | 0.3        |    0.0% | No         | -
+8     | sp|Q9KU18|CLPB_VIBCH | 0.3        |    0.0% | No         | -
+9     | sp|P0DF50|RUVB_STRP3 | 0.3        |    0.0% | No         | -
+10    | sp|A4STH5|NORR_AERS4 | 0.3        |   39.4% | Yes        | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|B5F3J7|RUVB_SALA4 | 0.2        |    0.0% | No         | -
+2     | sp|P0A812|RUVB_ECOLI | 0.2        |    0.0% | No         | -
+3     | sp|Q3K999|SFNR_PSEPF | 0.3        |   37.7% | Yes        | -
+4     | sp|B4SDZ7|RUVB_PELPB | 0.3        |    0.0% | No         | -
+5     | sp|Q15RN6|RUVB_PSEA6 | 0.3        |    0.0% | No         | -
+6     | sp|P0DF50|RUVB_STRP3 | 0.3        |    0.0% | No         | -
+7     | sp|A8A3I6|NORR_ECOHS | 0.3        |   38.2% | Yes        | -
+8     | sp|A4STH5|NORR_AERS4 | 0.3        |   39.4% | Yes        | -
+9     | sp|Q7WGB3|RUVB_BORBR | 0.3        |    0.0% | No         | -
+10    | sp|Q7U9W7|RUVB_PARMW | 0.3        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q9LF09|CSLAB_ARATH | 9849109504.0 |    0.0% | No         | -
+2     | sp|A4W964|OPGH_ENT38 | 12336791552.0 |    0.0% | No         | -
+3     | sp|O88693|CEGT_MOUSE | 12696229888.0 |    0.0% | No         | -
+4     | sp|P37653|BCSA_ECOLI | 12713425920.0 |    0.0% | No         | -
+5     | sp|C3K816|OPGH_PSEFS | 12852629504.0 |    0.0% | No         | -
+6     | sp|Q9LZR3|CSLA9_ARATH | 13233516544.0 |    0.0% | No         | -
+7     | sp|Q8NUQ4|CRTQ_STAAW | 13233882112.0 |    0.0% | No         | -
+8     | sp|Q5HCY7|CRTQ_STAAC | 13238521856.0 |    0.0% | No         | -
+9     | sp|Q9XT62|RAD17_CHLAE | 13254812672.0 |    0.0% | No         | -
+10    | sp|Q9PKU1|RBFA_CHLMU | 13261458432.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A009HN45
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.680          | 1      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.160
+ivf              | 14.1515        | 0      | 0.040
+ivfpq            | 12.9146        | 0      | 0.040
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|A6QKD8|SECA2_STAAE | 0.1        |    0.0% | No         | -
+2     | sp|A7MSB2|RAPA_VIBC1 | 0.1        |   28.6% | Yes        | Remote homolog? (Twilight Zone)
+3     | sp|Q3K063|SECA2_STRA1 | 0.2        |    0.0% | No         | -
+4     | sp|Q9ZDW2|UVRB_RICPR | 0.2        |    0.0% | No         | -
+5     | sp|Q1MQP3|SECA_LAWIP | 0.2        |    0.0% | No         | -
+6     | sp|Q7VJC6|SECA_HELHP | 0.2        |    0.0% | No         | -
+7     | sp|B0BT63|RAPA_ACTPJ | 0.2        |   31.8% | Yes        | -
+8     | sp|Q92H92|SECA_RICCN | 0.2        |    0.0% | No         | -
+9     | sp|Q0HMR2|RAPA_SHESM | 0.2        |   30.1% | Yes        | -
+10    | sp|Q99ZA5|UVRB_STRP1 | 0.2        |    0.0% | No         | -
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|A8GSU6|SECA_RICRS | 0.2        |    0.0% | No         | -
+2     | sp|O84707|SECA_CHLTR | 0.2        |    0.0% | No         | -
+3     | sp|Q03ZQ8|SECA_LEUMM | 0.2        |    0.0% | No         | -
+4     | sp|Q6MEX9|SECA_PARUW | 0.2        |    0.0% | No         | -
+5     | sp|C0PWY7|UVRB_SALPC | 0.2        |    0.0% | No         | -
+6     | sp|Q04J70|SECA_STRP2 | 0.2        |    0.0% | No         | -
+7     | sp|Q15Q25|SECA_PSEA6 | 0.2        |    0.0% | No         | -
+8     | sp|Q21MG1|SECA_SACD2 | 0.2        |    0.0% | No         | -
+9     | sp|Q47EI2|UVRB_DECAR | 0.2        |    0.0% | No         | -
+10    | sp|Q5HHR0|UVRB_STAAC | 0.2        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|A6M2Z0|UVRB_CLOB8 | 0.2        |    0.0% | No         | -
+2     | sp|A8GSU6|SECA_RICRS | 0.2        |    0.0% | No         | -
+3     | sp|B7NA78|UVRB_ECOLU | 0.2        |    0.0% | No         | -
+4     | sp|Q5HHR0|UVRB_STAAC | 0.2        |    0.0% | No         | -
+5     | sp|Q8NXM0|UVRB_STAAW | 0.2        |    0.0% | No         | -
+6     | sp|Q47EI2|UVRB_DECAR | 0.2        |    0.0% | No         | -
+7     | sp|C0PWY7|UVRB_SALPC | 0.2        |    0.0% | No         | -
+8     | sp|O84707|SECA_CHLTR | 0.2        |    0.0% | No         | -
+9     | sp|Q6MRS1|DNAA_BDEBA | 0.2        |    0.0% | No         | -
+10    | sp|Q4WWE9|CHL1_ASPFU | 0.2        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q00140|VTER_ICHVA | 11533289472.0 |    0.0% | No         | -
+2     | sp|Q9UAR6|MYOA_PLAFB | 11718671360.0 |    0.0% | No         | -
+3     | sp|Q9E6R1|HELI_GAHVM | 11942218752.0 |    0.0% | No         | -
+4     | sp|P20122|1A_CMVO    | 12331392000.0 |    0.0% | No         | -
+5     | sp|Q8BRF7|SCFD1_MOUSE | 12680476672.0 |    0.0% | No         | -
+6     | sp|P42271|TBG2_DROME | 12864954368.0 |    0.0% | No         | -
+7     | sp|P14868|SYDC_HUMAN | 13044171776.0 |    0.0% | No         | -
+8     | sp|B0BX57|RS4_RICRO  | 13049478144.0 |    0.0% | No         | -
+9     | sp|Q7RX73|KU80_NEUCR | 13376541696.0 |    0.0% | No         | -
+10    | sp|Q5BDP1|RSP5_EMENI | 13379003392.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A009HQC9
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.685          | 1      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.220
+ivf              | 14.1515        | 0      | 0.020
+ivfpq            | 12.9146        | 0      | 0.020
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q0HR19|RAPA_SHESR | 0.1        |   44.5% | Yes        | -
+2     | sp|Q0HMR2|RAPA_SHESM | 0.1        |   44.3% | Yes        | -
+3     | sp|A0KGL5|RAPA_AERHH | 0.1        |   45.2% | Yes        | -
+4     | sp|A1A7A6|RAPA_ECOK1 | 0.1        |   42.2% | Yes        | -
+5     | sp|A7ZW09|RAPA_ECOHS | 0.1        |   42.3% | Yes        | -
+6     | sp|B0BT63|RAPA_ACTPJ | 0.1        |   40.4% | Yes        | -
+7     | sp|Q48LP5|RAPA_PSE14 | 0.1        |   44.1% | Yes        | -
+8     | sp|B5FI41|RAPA_SALDC | 0.1        |   42.3% | Yes        | -
+9     | sp|Q5PDF0|RAPA_SALPA | 0.1        |   42.3% | Yes        | -
+10    | sp|Q3KGV8|RAPA_PSEPF | 0.1        |   45.4% | Yes        | -
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q48LP5|RAPA_PSE14 | 0.1        |   44.1% | Yes        | -
+2     | sp|C0PWY7|UVRB_SALPC | 0.2        |    0.0% | No         | -
+3     | sp|B7I8J5|SECA_ACIB5 | 0.2        |    0.0% | No         | -
+4     | sp|B7NA78|UVRB_ECOLU | 0.2        |    0.0% | No         | -
+5     | sp|A1W465|SECA_ACISJ | 0.2        |    0.0% | No         | -
+6     | sp|Q21MG1|SECA_SACD2 | 0.2        |    0.0% | No         | -
+7     | sp|Q15Q25|SECA_PSEA6 | 0.2        |    0.0% | No         | -
+8     | sp|O84707|SECA_CHLTR | 0.2        |    0.0% | No         | -
+9     | sp|Q6MEX9|SECA_PARUW | 0.2        |    0.0% | No         | -
+10    | sp|Q03ZQ8|SECA_LEUMM | 0.2        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q48LP5|RAPA_PSE14 | 0.1        |   44.1% | Yes        | -
+2     | sp|B7NA78|UVRB_ECOLU | 0.2        |    0.0% | No         | -
+3     | sp|C0PWY7|UVRB_SALPC | 0.2        |    0.0% | No         | -
+4     | sp|Q47EI2|UVRB_DECAR | 0.2        |    0.0% | No         | -
+5     | sp|B7I8J5|SECA_ACIB5 | 0.2        |    0.0% | No         | -
+6     | sp|O84707|SECA_CHLTR | 0.2        |    0.0% | No         | -
+7     | sp|A1W465|SECA_ACISJ | 0.2        |    0.0% | No         | -
+8     | sp|Q6MEX9|SECA_PARUW | 0.2        |    0.0% | No         | -
+9     | sp|Q72XS9|SECA_BACC1 | 0.2        |    0.0% | No         | -
+10    | sp|Q21MG1|SECA_SACD2 | 0.2        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q9UUD2|PRP38_SCHPO | 9865719808.0 |    0.0% | No         | -
+2     | sp|Q25AA3|MRE11_ORYSI | 10305929216.0 |    0.0% | No         | -
+3     | sp|P14868|SYDC_HUMAN | 10481775616.0 |    0.0% | No         | -
+4     | sp|Q7RX73|KU80_NEUCR | 10533824512.0 |    0.0% | No         | -
+5     | sp|C3K816|OPGH_PSEFS | 11762841600.0 |    0.0% | No         | -
+6     | sp|A4W964|OPGH_ENT38 | 11966686208.0 |    0.0% | No         | -
+7     | sp|Q4KJM5|OPGH_PSEF5 | 12334986240.0 |    0.0% | No         | -
+8     | sp|P37653|BCSA_ECOLI | 12529368064.0 |    0.0% | No         | -
+9     | sp|Q5RGJ5|C19L1_DANRE | 12691760128.0 |    0.0% | No         | -
+10    | sp|Q03768|GIR2_YEAST | 12700791808.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A009HPM0
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.522          | 1      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.000
+ivf              | 14.1515        | 0      | 0.020
+ivfpq            | 12.9146        | 0      | 0.000
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q7MIG6|DXR_VIBVY  | 0.3        |    0.0% | No         | -
+2     | sp|A3QHZ8|RSMC_SHELP | 0.3        |    0.0% | No         | -
+3     | sp|Q9KV40|MURB_VIBCH | 0.3        |    0.0% | No         | -
+4     | sp|Q6D8D9|DXR_PECAS  | 0.3        |    0.0% | No         | -
+5     | sp|Q8EE77|RNFG_SHEON | 0.3        |    0.0% | No         | -
+6     | sp|Q9KKQ6|MTLD_VIBCH | 0.3        |    0.0% | No         | -
+7     | sp|B8HVK1|DXR_CYAP4  | 0.3        |    0.0% | No         | -
+8     | sp|Q9V3D6|CPSF2_DROME | 0.3        |    0.0% | No         | -
+9     | sp|Q081I3|RSMF_SHEFN | 0.3        |    0.0% | No         | -
+10    | sp|A4Y7J8|RSMF_SHEPC | 0.3        |    0.0% | No         | -
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|A3DA85|SELU_SHEB5 | 0.3        |    0.0% | No         | -
+2     | sp|A8GKD1|G6PI_SERP5 | 0.3        |    0.0% | No         | -
+3     | sp|B1LNS5|TRMA_ECOSM | 0.3        |    0.0% | No         | -
+4     | sp|Q07YK6|PURT_SHEFN | 0.3        |   26.9% | Yes        | Remote homolog? (Twilight Zone)
+5     | sp|A3D8E4|RSMC_SHEB5 | 0.3        |    0.0% | No         | -
+6     | sp|B2K9Z2|HCP_YERPB  | 0.3        |    0.0% | No         | -
+7     | sp|B7I2C3|FMT_ACIB5  | 0.3        |    0.0% | No         | -
+8     | sp|A1AJ76|MUTL_ECOK1 | 0.3        |    0.0% | No         | -
+9     | sp|B0VKL3|RLMD_ACIBS | 0.3        |    0.0% | No         | -
+10    | sp|B1KHV0|MUTL_SHEWM | 0.3        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q1CGA8|RLMC_YERPN | 0.3        |    0.0% | No         | -
+2     | sp|Q3Z4Q0|SELU_SHISS | 0.3        |    0.0% | No         | -
+3     | sp|Q0T790|SELU_SHIF8 | 0.3        |    0.0% | No         | -
+4     | sp|A3DA85|SELU_SHEB5 | 0.3        |    0.0% | No         | -
+5     | sp|B0VKL3|RLMD_ACIBS | 0.3        |    0.0% | No         | -
+6     | sp|A1AJ76|MUTL_ECOK1 | 0.3        |    0.0% | No         | -
+7     | sp|Q4QLU9|RLMC_HAEI8 | 0.3        |    0.0% | No         | -
+8     | sp|A3D8E4|RSMC_SHEB5 | 0.3        |    0.0% | No         | -
+9     | sp|B7M5S7|GLPB_ECO8A | 0.3        |    0.0% | No         | -
+10    | sp|B5EYX0|GLPB_SALA4 | 0.3        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q9N363|DCP1_CAEEL | 15927797760.0 |    0.0% | No         | -
+2     | sp|P14892|CWLA_BACSP | 16012103680.0 |    0.0% | No         | -
+3     | sp|C4K189|SECB_RICPU | 16042425344.0 |    0.0% | No         | -
+4     | sp|Q4KJM5|OPGH_PSEF5 | 16042425344.0 |    0.0% | No         | -
+5     | sp|Q9PKU1|RBFA_CHLMU | 16153310208.0 |    0.0% | No         | -
+6     | sp|Q1KVR6|RR9_TETOB  | 16173603840.0 |    0.0% | No         | -
+7     | sp|P94362|YXKI_BACSU | 16174721024.0 |    0.0% | No         | -
+8     | sp|A4W964|OPGH_ENT38 | 16174842880.0 |    0.0% | No         | -
+9     | sp|Q9WXI5|PTHP_BUCAI | 16179349504.0 |    0.0% | No         | -
+10    | sp|A7WYX0|RXL7_STAA1 | 16182432768.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A009IB02
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.840          | 1      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.040
+ivf              | 14.1515        | 0      | 0.040
+ivfpq            | 12.9146        | 0      | 0.040
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P11961|ODP2_GEOSE | 0.3        |   33.0% | Yes        | -
+2     | sp|Q68XI8|ODO2_RICTY | 0.5        |   28.3% | Yes        | Remote homolog? (Twilight Zone)
+3     | sp|Q9Z4H7|HTRA_LACHE | 0.5        |    0.0% | No         | -
+4     | sp|Q11HC6|TATB_CHESB | 0.5        |    0.0% | No         | -
+5     | sp|A7X146|ISDB_STAA1 | 0.5        |    0.0% | No         | -
+6     | sp|Q51368|TONB_PSEAE | 0.5        |    0.0% | No         | -
+7     | sp|Q4R4J7|NUCL_MACFA | 0.5        |    0.0% | No         | -
+8     | sp|A0A0M4FTF3|BCP_PETHY | 0.5        |    0.0% | No         | -
+9     | sp|Q4IJH1|DBP3_GIBZE | 0.6        |    0.0% | No         | -
+10    | sp|Q76F73|FEN1_COPCI | 0.6        |    0.0% | No         | -
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P10802|ODP2_AZOVI | 0.3        |   45.8% | Yes        | -
+2     | sp|P29337|BCCP_STRMU | 0.5        |   41.4% | Yes        | -
+3     | sp|Q0RRT2|RL7_FRAAA  | 0.6        |    0.0% | No         | -
+4     | sp|P45523|FKBA_ECOLI | 0.6        |    0.0% | No         | -
+5     | sp|Q73SE8|RL7_MYCPA  | 0.6        |    0.0% | No         | -
+6     | sp|Q7NQE5|RL7_CHRVO  | 0.6        |    0.0% | No         | -
+7     | sp|Q9UUZ6|RLA2_ASPFU | 0.6        |    0.0% | No         | -
+8     | sp|B1JU13|RL7_BURO0  | 0.6        |    0.0% | No         | -
+9     | sp|Q60A07|RL7_METCA  | 0.6        |    0.0% | No         | -
+10    | sp|Q5WZM0|RL7_LEGPL  | 0.6        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P10802|ODP2_AZOVI | 0.3        |   45.8% | Yes        | -
+2     | sp|A5VXN9|RL7_PSEP1  | 0.5        |    0.0% | No         | -
+3     | sp|Q60A07|RL7_METCA  | 0.6        |    0.0% | No         | -
+4     | sp|B1IGG3|RL7_CLOBK  | 0.6        |    0.0% | No         | -
+5     | sp|Q0RRT2|RL7_FRAAA  | 0.6        |    0.0% | No         | -
+6     | sp|Q7NQE5|RL7_CHRVO  | 0.6        |    0.0% | No         | -
+7     | sp|B0VLZ7|RL7_ACIBS  | 0.6        |    0.0% | No         | -
+8     | sp|Q1CN79|RL7_YERPN  | 0.6        |    0.0% | No         | -
+9     | sp|C4LBV3|RL7_TOLAT  | 0.6        |    0.0% | No         | -
+10    | sp|C0Q9Y0|RL7_DESAH  | 0.6        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q56WK6|PATL1_ARATH | 12144951296.0 |    0.0% | No         | -
+2     | sp|P80723|BASP1_HUMAN | 16179363840.0 |    0.0% | No         | -
+3     | sp|Q56ZI2|PATL2_ARATH | 16639203328.0 |    0.0% | No         | -
+4     | sp|Q2UA18|SFH5_ASPOR | 17000647680.0 |    0.0% | No         | -
+5     | sp|Q6NWH2|MRPB_DANRE | 17419827200.0 |    0.0% | No         | -
+6     | sp|O06432|TONB_NEIGO | 17573492736.0 |    0.0% | No         | -
+7     | sp|Q5NVP7|NEUM_PONAB | 18217971712.0 |    0.0% | No         | -
+8     | sp|P35001|NEUM_CHICK | 18583431168.0 |    0.0% | No         | -
+9     | sp|P57003|TONB_NEIMA | 18586134528.0 |    0.0% | No         | -
+10    | sp|Q3TEA8|HP1B3_MOUSE | 18841987072.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A010Q3W2
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.531          | 1      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.000
+ivf              | 14.1515        | 0      | 0.020
+ivfpq            | 12.9146        | 0      | 0.020
+neural           | 0.5178         | 1      | 0.000
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|D1ZEM6|LIS12_SORMK | 0.2        |    0.0% | No         | -
+2     | sp|P0CS56|CMR1_CRYNJ | 0.3        |    0.0% | No         | -
+3     | sp|Q2UUT4|CMR1_ASPOR | 0.3        |    0.0% | No         | -
+4     | sp|P0CS29|ATG18_CRYNB | 0.3        |    0.0% | No         | -
+5     | sp|A2QI22|YTM1_ASPNC | 0.3        |    0.0% | No         | -
+6     | sp|A1CXL0|YTM1_NEOFI | 0.3        |    0.0% | No         | -
+7     | sp|A2RAG5|ATG18_ASPNC | 0.3        |    0.0% | No         | -
+8     | sp|O35828|CORO7_RAT  | 0.3        |    0.0% | No         | -
+9     | sp|Q9P7C0|YKU5_SCHPO | 0.3        |    0.0% | No         | -
+10    | sp|Q9SU78|MSI5_ARATH | 0.3        |    0.0% | No         | -
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|A2RAG5|ATG18_ASPNC | 0.3        |    0.0% | No         | -
+2     | sp|Q9S7I8|CDC22_ARATH | 0.3        |    0.0% | No         | -
+3     | sp|O82266|SWA1_ARATH | 0.3        |   26.7% | Yes        | Remote homolog? (Twilight Zone)
+4     | sp|Q8TEB1|DCA11_HUMAN | 0.3        |    0.0% | No         | -
+5     | sp|Q05B30|WDR91_XENTR | 0.3        |    0.0% | No         | WD repeat structural match
+6     | sp|Q8BX09|RBBP5_MOUSE | 0.3        |    0.0% | No         | -
+7     | sp|Q24246|DYIN_DROME | 0.3        |    0.0% | No         | -
+8     | sp|Q9WUC8|PLRG1_RAT  | 0.3        |    0.0% | No         | -
+9     | sp|P0CS37|HAT2_CRYNB | 0.3        |    0.0% | No         | -
+10    | sp|O74340|DCA13_SCHPO | 0.3        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q8TEB1|DCA11_HUMAN | 0.3        |    0.0% | No         | -
+2     | sp|A2RAG5|ATG18_ASPNC | 0.3        |    0.0% | No         | -
+3     | sp|Q9S7I8|CDC22_ARATH | 0.3        |    0.0% | No         | -
+4     | sp|O82266|SWA1_ARATH | 0.3        |   26.7% | Yes        | Remote homolog? (Twilight Zone)
+5     | sp|P93107|PF20_CHLRE | 0.3        |    0.0% | No         | -
+6     | sp|Q05B30|WDR91_XENTR | 0.3        |    0.0% | No         | WD repeat structural match
+7     | sp|O74340|DCA13_SCHPO | 0.3        |    0.0% | No         | -
+8     | sp|P0CS37|HAT2_CRYNB | 0.3        |    0.0% | No         | -
+9     | sp|Q8BX09|RBBP5_MOUSE | 0.3        |    0.0% | No         | -
+10    | sp|Q5BIM8|ERCC8_BOVIN | 0.3        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q499B3|KANL3_DANRE | 14238874624.0 |    0.0% | No         | -
+2     | sp|D8QAM0|PFF1_SCHCM | 14415209472.0 |    0.0% | No         | -
+3     | sp|Q2M2I3|FA83E_HUMAN | 14580077568.0 |    0.0% | No         | -
+4     | sp|Q91VA6|PDIP2_MOUSE | 14718585856.0 |    0.0% | No         | -
+5     | sp|A2ATU0|DHTK1_MOUSE | 14887539712.0 |    0.0% | No         | -
+6     | sp|P84396|TRM3_EHV1V | 15025199104.0 |    0.0% | No         | -
+7     | sp|Q4PI88|EIF3F_MYCMD | 15174243328.0 |    0.0% | No         | -
+8     | sp|P22945|NIA_EMENI  | 15176429568.0 |    0.0% | No         | -
+9     | sp|A4R254|PFF1_PYRO7 | 15179284480.0 |    0.0% | No         | -
+10    | sp|Q99K28|ARFG2_MOUSE | 15189073920.0 |    0.0% | No         | -
+
+==============================================================================================================
+
+Query Protein: A0A010Q8R4
+N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+-------------------------------------------------------------------------------------
+Method           | Time/query(s)  | QPS    | Recall@N vs BLAST
+-------------------------------------------------------------------------------------
+BLAST(Ref)       | 0.626          | 1      | 1.00 (Reference)
+lsh              | 0.0000         | 0      | 0.000
+hypercube        | 0.1544         | 6      | 0.067
+ivf              | 14.1515        | 0      | 0.044
+ivfpq            | 12.9146        | 0      | 0.044
+neural           | 0.5178         | 1      | 0.022
+-------------------------------------------------------------------------------------
+
+[2] Top-N γείτονες ανά μέθοδο (N=10 για εκτύπωση)
+
+Method: lsh
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+
+Method: hypercube
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|P0CS29|ATG18_CRYNB | 0.2        |    0.0% | No         | -
+2     | sp|A1CBB8|ATG18_ASPCL | 0.3        |    0.0% | No         | -
+3     | sp|A2RAG5|ATG18_ASPNC | 0.3        |    0.0% | No         | -
+4     | sp|A1DE24|ATG18_NEOFI | 0.3        |    0.0% | No         | -
+5     | sp|P0CP30|NPL4_CRYNJ | 0.3        |    0.0% | No         | -
+6     | sp|A2QI73|RTC5_ASPNC | 0.3        |    0.0% | No         | -
+7     | sp|Q5ZMV9|WDR24_CHICK | 0.3        |   23.9% | Yes        | WD repeat structural match
+8     | sp|C5JIS5|RTC5_BLAGS | 0.3        |    0.0% | No         | -
+9     | sp|Q4PA27|JIP5_MYCMD | 0.3        |    0.0% | No         | -
+10    | sp|C5JYV0|MMM1_BLAGS | 0.3        |    0.0% | No         | -
+
+Method: ivf
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q6CXX3|HIR1_KLULA | 0.3        |   26.1% | Yes        | Remote homolog? (Twilight Zone)
+2     | sp|A2RAG5|ATG18_ASPNC | 0.3        |    0.0% | No         | -
+3     | sp|B8MJJ8|RTC5_TALSN | 0.3        |    0.0% | No         | -
+4     | sp|Q24246|DYIN_DROME | 0.3        |    0.0% | No         | -
+5     | sp|C0S4K1|ATP25_PARBP | 0.3        |    0.0% | No         | -
+6     | sp|E4UPA0|RTC5_ARTGP | 0.3        |    0.0% | No         | -
+7     | sp|P0CP30|NPL4_CRYNJ | 0.3        |    0.0% | No         | -
+8     | sp|Q8BX09|RBBP5_MOUSE | 0.3        |   21.4% | Yes        | Remote homolog? (Twilight Zone)
+9     | sp|Q4WWM8|SEC2_ASPFU | 0.3        |    0.0% | No         | -
+10    | sp|A2QNQ8|GRC3_ASPNC | 0.3        |    0.0% | No         | -
+
+Method: ivfpq
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q4WWM8|SEC2_ASPFU | 0.3        |    0.0% | No         | -
+2     | sp|B8MJJ8|RTC5_TALSN | 0.3        |    0.0% | No         | -
+3     | sp|E4UPA0|RTC5_ARTGP | 0.3        |    0.0% | No         | -
+4     | sp|P0CO69|MDM12_CRYNB | 0.3        |    0.0% | No         | -
+5     | sp|Q4WD42|FSQA_ASPFU | 0.3        |    0.0% | No         | -
+6     | sp|P0CP30|NPL4_CRYNJ | 0.3        |    0.0% | No         | -
+7     | sp|Q5BFX0|EXO84_EMENI | 0.3        |    0.0% | No         | -
+8     | sp|A2QNQ8|GRC3_ASPNC | 0.3        |    0.0% | No         | -
+9     | sp|Q24246|DYIN_DROME | 0.3        |    0.0% | No         | -
+10    | sp|Q5AZC9|SNX41_EMENI | 0.3        |    0.0% | No         | -
+
+Method: neural
+Rank  | Neighbor ID          | L2Dist     | Ident.   | In BLAST?  | Bio Comment
+---------------------------------------------------------------------------------------------------------
+1     | sp|Q05534|PHOG_EMENI | 15604574208.0 |    0.0% | No         | -
+2     | sp|Q9VBC4|WDR20_DROME | 15956711424.0 |   22.4% | Yes        | WD repeat structural match
+3     | sp|O13412|AREA_ASPNG | 16071940096.0 |    0.0% | No         | -
+4     | sp|Q4TU14|RHF1A_ARATH | 16082107392.0 |    0.0% | No         | -
+5     | sp|Q7SB65|IRS4_NEUCR | 16242864128.0 |    0.0% | No         | -
+6     | sp|Q4WWM8|SEC2_ASPFU | 16521036800.0 |    0.0% | No         | -
+7     | sp|A8NYS9|MDM34_COPC7 | 16624515072.0 |    0.0% | No         | -
+8     | sp|G5EB20|SREA_EMENI | 16774088704.0 |    0.0% | No         | -
+9     | sp|Q0JPT4|BZR2_ORYSJ | 16777624576.0 |    0.0% | No         | -
+10    | sp|Q6AU90|BZP39_ORYSJ | 16788236288.0 |    0.0% | No         | -
+
+==============================================================================================================
