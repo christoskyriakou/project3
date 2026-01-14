@@ -181,6 +181,16 @@ def run_c_search_batch(method, db_file, all_queries_file, N, params, id_mapping,
         # Στο PQ το M (subspaces) πρέπει να διαιρεί το 320 (π.χ. M=10 ή M=20 ή M=40)
         cmd = [BINARY_IVF_PQ, "-d", db_file, "-q", all_queries_file, "-o", out_tmp.name, "-N", str(N), "-type", "sift"]
         cmd += ["-ivfpq", "-kclusters", str(params['ivf_k']), "-nprobe", str(params['ivf_probe']), "-M", "20", "-nbits", "8", "-range", "false"]
+    elif method == "neural":    
+        # Χρησιμοποιούμε τις παραμέτρους που απαιτεί το nlsh_search.py
+        # -i για το μοντέλο, -type sift για τα ESM-2 embeddings
+        cmd = ["python3", "nlsh_search.py", 
+               "-d", db_file, 
+               "-q", all_queries_file, 
+               "-i", "nlsh_model.pth", 
+               "-o", out_tmp.name, 
+               "-type", "sift", 
+               "-N", str(N)]
     print(f"   [BATCH] Running {method} on all queries...")
     start = time.time()
     try:
