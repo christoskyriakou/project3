@@ -77,51 +77,17 @@ void kmeans_init_centroids(KMeans *km, Vector *data, int n, unsigned int seed) {
         free(distances);
     }
 }
-void kmeans_free(KMeans *km) {
-    if (km == NULL) return;
-
-    // 1. Αποδέσμευση των centroids
-    if (km->centroids) {
-        for (int i = 0; i < km->k; i++) {
-            if (km->centroids[i].coords) {
-                free(km->centroids[i].coords);
-            }
-        }
-        free(km->centroids);
-    }
-
-    // 2. Αποδέσμευση των clusters (assignments)
-    if (km->clusters) {
-        for (int i = 0; i < km->k; i++) {
-            if (km->clusters[i].assignments) {
-                free(km->clusters[i].assignments);
-            }
-        }
-        free(km->clusters);
-    }
-
-    // 3. Αποδέσμευση του ίδιου του struct
-    free(km);
-}
-// ΑΝΤΙΚΑΤΑΣΤΑΣΗ ΤΗΣ kmeans_train ΣΤΟ kmeans.c
 
 void kmeans_train(KMeans *km, Vector *data, int n, int max_iter) {
-    // Force max_iter to be small to ensure it finishes
-    int LIMIT = 20; 
-    
     int *assignments = (int*)malloc(n * sizeof(int));
-    // Init assignments
-    for(int i=0; i<n; i++) assignments[i] = -1;
-
-    printf("[DEBUG] K-Means started. Force Limit: %d iterations.\n", LIMIT);
-
-    for (int iter = 0; iter < LIMIT; iter++) {
+    
+    for (int iter = 0; iter < max_iter; iter++) {
+        // Assignment step
         int changed = 0;
-        
-        // 1. Assignment Step
         for (int i = 0; i < n; i++) {
             float min_dist = FLT_MAX;
             int best_cluster = 0;
+            
             for (int k = 0; k < km->k; k++) {
                 float dist = euclidean_distance(data[i].coords, km->centroids[k].coords, km->dim);
                 if (dist < min_dist) {
@@ -129,30 +95,25 @@ void kmeans_train(KMeans *km, Vector *data, int n, int max_iter) {
                     best_cluster = k;
                 }
             }
-            if (assignments[i] != best_cluster) changed++;
+            
+            if (assignments[i] != best_cluster) changed = 1;
             assignments[i] = best_cluster;
         }
-
-        printf("[DEBUG] Iteration %d/%d: %d points moved.\n", iter+1, LIMIT, changed);
-
-        // Check convergence
-        if (changed == 0 && iter > 0) {
-            printf("[DEBUG] Converged early at iter %d.\n", iter+1);
-            break;
-        }
-
-        // 2. Update Step (Recalculate Centroids)
+        
+        if (!changed && iter > 0) break;
+        
+        // Update step
         int *counts = (int*)calloc(km->k, sizeof(int));
         for (int k = 0; k < km->k; k++) {
             memset(km->centroids[k].coords, 0, km->dim * sizeof(float));
         }
         
         for (int i = 0; i < n; i++) {
-            int c = assignments[i];
+            int cluster = assignments[i];
             for (int d = 0; d < km->dim; d++) {
-                km->centroids[c].coords[d] += data[i].coords[d];
+                km->centroids[cluster].coords[d] += data[i].coords[d];
             }
-            counts[c]++;
+            counts[cluster]++;
         }
         
         for (int k = 0; k < km->k; k++) {
@@ -162,28 +123,39 @@ void kmeans_train(KMeans *km, Vector *data, int n, int max_iter) {
                 }
             }
         }
+        
         free(counts);
     }
     
-    // 3. Finalize Structs (Save assignments to struct)
+    // Store final assignments
     for (int k = 0; k < km->k; k++) {
-         if(km->clusters[k].assignments != NULL) free(km->clusters[k].assignments);
-         
-         int c_size = 0;
-         for(int i=0; i<n; i++) if(assignments[i]==k) c_size++;
-         
-         km->clusters[k].size = c_size;
-         km->clusters[k].assignments = (int*)malloc(c_size * sizeof(int));
-         
-         int idx = 0;
-         for (int i = 0; i < n; i++) {
-            if (assignments[i] == k) km->clusters[k].assignments[idx++] = i;
-         }
+        km->clusters[k].size = 0;
+        for (int i = 0; i < n; i++) {
+            if (assignments[i] == k) km->clusters[k].size++;
+        }
+        km->clusters[k].assignments = (int*)malloc(km->clusters[k].size * sizeof(int));
+        int idx = 0;
+        for (int i = 0; i < n; i++) {
+            if (assignments[i] == k) {
+                km->clusters[k].assignments[idx++] = i;
+            }
+        }
     }
     
     free(assignments);
-    printf("[DEBUG] K-Means finished successfully.\n");
 }
+
+void kmeans_free(KMeans *km) {
+    for (int i = 0; i < km->k; i++) {
+        free(km->centroids[i].coords);
+        free(km->clusters[i].assignments);
+    }
+    free(km->centroids);
+    free(km->clusters);
+    free(km);
+}
+
+
 // Silhouette 
 
 float compute_silhouette_score(Vector *data, int n, int *assignments, Vector *centroids, int k, int dim) {
