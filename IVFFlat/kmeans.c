@@ -198,41 +198,23 @@ float calculate_silhouette(Vector** vectors, int n, Cluster* clusters, int k) {
     return valid_points > 0 ? total_silhouette / valid_points : 0.0f;
 }
 
-// Αντικαταστήστε την υπάρχουσα συνάρτηση kmeans με αυτήν:
-
 void kmeans(Vector** vectors, int n, Cluster* clusters, int k, int dimension, int max_iterations, unsigned int seed) {
-    // ΣΚΛΗΡΟ ΟΡΙΟ: Αν το max_iterations είναι πολύ μεγάλο (π.χ. 1000), το κόβουμε στο 20 για να τελειώνει γρήγορα.
-    // Αν θέλετε περισσότερη ακρίβεια αργότερα, αυξήστε το στο 50.
-    int LIMIT = (max_iterations > 20) ? 20 : max_iterations; 
-    if (LIMIT < 5) LIMIT = 5; // Τουλάχιστον 5 επαναλήψεις
-
-    printf("[DEBUG] K-Means started. Points: %d, Clusters: %d, Max Iterations: %d\n", n, k, LIMIT);
-
-    // 1. Initialize Centroids
     initialize_centroids_kmeans(vectors, n, clusters, k, dimension, seed);
     
-    // 2. Iterate
-    for (int iter = 0; iter < LIMIT; iter++) {
-        // Reset cluster member counts before assignment
+    // Iterate until convergence or max iterations
+    for (int iter = 0; iter < max_iterations; iter++) {
+        // Reset cluster members
         for (int c = 0; c < k; c++) {
             clusters[c].member_count = 0;
         }
         
-        // Assignment Step
         int changes = assign_to_clusters(vectors, n, clusters, k);
         
-        // Debug Print: Δείχνει ότι ο αλγόριθμος "ζει" και προχωράει 
-        printf("[DEBUG] Iteration %d/%d: %d points changed clusters\n", iter+1, LIMIT, changes);
-
-        // Check Convergence
         if (changes == 0) {
-            printf("[DEBUG] K-means converged early at iteration %d\n", iter+1);
+            printf("K-means converged at iteration %d\n", iter);
             break;
         }
         
-        // Update Centroids Step
         update_centroids(vectors, clusters, k, dimension);
     }
-
-    printf("[DEBUG] K-Means finished.\n");
 }

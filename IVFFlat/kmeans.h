@@ -1,5 +1,3 @@
-
-
 typedef struct {
     float* coords;      // Vector coordinates
     int dimension;      // Vector dimension

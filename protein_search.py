@@ -173,12 +173,14 @@ def run_c_search_batch(method, db_file, all_queries_file, N, params, id_mapping,
         cmd = [BINARY_HYPERCUBE, "-d", db_file, "-q", all_queries_file, "-o", out_tmp.name, "-N", str(N), "-type", "sift"]
         cmd += ["-kproj", str(params['hc_k']), "-M", str(params['hc_M']), "-probes", str(params['hc_probes']), "-w", str(params['hc_w'])]
     elif method == "ivf": 
+        # Προσθέτουμε -range false για να σιγουρέψουμε ότι δεν θα μπει σε range search loops
         cmd = [BINARY_IVF_FLAT, "-d", db_file, "-q", all_queries_file, "-o", out_tmp.name, "-N", str(N), "-type", "sift"]
-        cmd += ["-ivfflat", "-kclusters", str(params['ivf_k']), "-nprobe", str(params['ivf_probe'])]
+        cmd += ["-ivfflat", "-kclusters", str(params['ivf_k']), "-nprobe", str(params['ivf_probe']), "-range", "false"]
+    
     elif method == "ivfpq":
+        # Στο PQ το M (subspaces) πρέπει να διαιρεί το 320 (π.χ. M=10 ή M=20 ή M=40)
         cmd = [BINARY_IVF_PQ, "-d", db_file, "-q", all_queries_file, "-o", out_tmp.name, "-N", str(N), "-type", "sift"]
-        cmd += ["-ivfpq", "-kclusters", str(params['ivf_k']), "-nprobe", str(params['ivf_probe']), "-M", "16", "-nbits", "8"]
-
+        cmd += ["-ivfpq", "-kclusters", str(params['ivf_k']), "-nprobe", str(params['ivf_probe']), "-M", "20", "-nbits", "8", "-range", "false"]
     print(f"   [BATCH] Running {method} on all queries...")
     start = time.time()
     try:

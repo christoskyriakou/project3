@@ -1,4 +1,3 @@
-
 #include "kmeans.h"
 #include "ivfflat.h"
 #include "dataload.h"
