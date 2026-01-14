@@ -1,211 +1,163 @@
-
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <math.h>
 #include <float.h>
 #include <time.h>
-#include "kmeans.h"
-#include "ivfflat.h"
+#include <sys/time.h>
+#include <getopt.h>
+#include "dataload.h"
 
-// Dataset Loading Functions
 
-// Byte swap for big-endian to little-endian conversion
-uint32_t swap_endian_32(uint32_t val) {
-    return ((val & 0x000000FF) << 24) |
-           ((val & 0x0000FF00) << 8) |
-           ((val & 0x00FF0000) >> 8) |
-           ((val & 0xFF000000) >> 24);
+// Urility functions
+
+double get_time() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec + tv.tv_usec * 1e-6;
 }
 
-// Read 32-bit integer (Big-Endian for MNIST)
-uint32_t read_int32_be(FILE* f) {
-    uint32_t val;
-    if (fread(&val, sizeof(uint32_t), 1, f) != 1) {
-        return 0;
+float euclidean_distance(float *a, float *b, int dim) {
+    float sum = 0.0;
+    for (int i = 0; i < dim; i++) {
+        float diff = a[i] - b[i];
+        sum += diff * diff;
     }
-    return swap_endian_32(val);
+    return sqrtf(sum);
 }
 
-// Read 32-bit integer (Little-Endian for SIFT)
-uint32_t read_int32_le(FILE* f) {
-    uint32_t val;
-    if (fread(&val, sizeof(uint32_t), 1, f) != 1) {
-        return 0;
-    }
-    return val;
+float asymmetric_distance(float *query_subvec, Vector *centroids, unsigned char code, int subvec_dim) {
+    return euclidean_distance(query_subvec, centroids[code].coords, subvec_dim);
 }
 
-// Load MNIST dataset
-Vector** load_mnist(const char* filename, int* count, int* dimension, int isQuery) {
-    FILE* f = fopen(filename, "rb");
-    if (!f) {
-        fprintf(stderr, "Error: Cannot open file %s\n", filename);
-        return NULL;
-    }
-    
-    uint32_t magic = read_int32_be(f);
-    if (magic != 2051) {
-        fprintf(stderr, "Error: Invalid MNIST file format (magic=%u)\n", magic);
-        fclose(f);
-        return NULL;
-    }
-    
-    uint32_t num_images = read_int32_be(f);
-    uint32_t rows = read_int32_be(f);
-    uint32_t cols = read_int32_be(f);
-    
-    *count = num_images;
-    if (isQuery) {
-        *count = 50;
-    } else {
-        *count = 500;
-    }
-    
-    *dimension = rows * cols;
-    
-    printf("Loading MNIST: %u images of %ux%u (dim=%d)\n", 
-           num_images, rows, cols, *dimension);
-    
-    Vector** vectors = (Vector**)malloc(*count * sizeof(Vector*));
-    if (!vectors) {
-        fprintf(stderr, "Error: Memory allocation failed\n");
-        fclose(f);
-        return NULL;
-    }
-    
-    for (int i = 0; i < *count; i++) {
-        vectors[i] = create_vector(*dimension, i);
-        if (!vectors[i]) {
-            fprintf(stderr, "Error: Cannot create vector %d\n", i);
-            fclose(f);
-            return NULL;
-        }
-        
-        for (int j = 0; j < *dimension; j++) {
-            uint8_t pixel;
-            if (fread(&pixel, sizeof(uint8_t), 1, f) != 1) {
-                fprintf(stderr, "Error: Cannot read pixel data\n");
-                fclose(f);
-                return NULL;
-            }
-            vectors[i]->coords[j] = (float)pixel;
-        }
-        
-        if ((i + 1) % *count == 0) {
-            printf("  Loaded %d/%u images\n", i + 1, *count);
-        }
-    }
-    
-    fclose(f);
-    printf("MNIST dataset loaded successfully\n\n");
-    return vectors;
+void init_random(unsigned int seed) {
+    srand(seed);
 }
 
-// Load SIFT dataset
-Vector** load_sift(const char* filename, int* count, int* dimension, int isQuery) {
-    FILE* f = fopen(filename, "rb");
-    if (!f) {
-        fprintf(stderr, "Error: Cannot open file %s\n", filename);
-        return NULL;
-    }
-    
-    // Read first dimension value
-    uint32_t dim;
-    if (fread(&dim, sizeof(uint32_t), 1, f) != 1) {
-        fprintf(stderr, "Error: Cannot read dimension\n");
-        fclose(f);
-        return NULL;
-    }
-    *dimension = dim;
-    
-    // Count total vectors by file size
-    fseek(f, 0, SEEK_END);
-    long file_size = ftell(f);
-    int bytes_per_vector = (dim + 1) * sizeof(float);
-    *count = file_size / bytes_per_vector;
-    
-    // Less vectors than original file to save time
-    int total = (int)(file_size / bytes_per_vector);
-    *count = total;
-
-    if (isQuery) {
-        // for query files like one_query.fvecs, keep all (usually very small)
-        // but if it is a big query file, optionally cap:
-        // *count = total < 1000 ? total : 1000;
-        *count = total;
-    } else {
-        // for dataset, keep all available
-        *count = total;
-    }
-        
-    
-    
-    printf("Loading SIFT: %d vectors of dimension %d\n", *count, *dimension);
-    
-    fseek(f, 0, SEEK_SET);
-    
-    Vector** vectors = (Vector**)malloc(*count * sizeof(Vector*));
-    if (!vectors) {
-        fprintf(stderr, "Error: Memory allocation failed\n");
-        fclose(f);
-        return NULL;
-    }
-    
-    for (int i = 0; i < *count; i++) {
-        uint32_t d;
-        if (fread(&d, sizeof(uint32_t), 1, f) != 1) {
-            fprintf(stderr, "Error: Cannot read dimension for vector %d\n", i);
-            break;
-        }
-        
-        vectors[i] = create_vector(*dimension, i);
-        if (!vectors[i]) {
-            fprintf(stderr, "Error: Cannot create vector %d\n", i);
-            break;
-        }
-        
-        if (fread(vectors[i]->coords, sizeof(float), *dimension, f) != *dimension) {
-            fprintf(stderr, "Error: Cannot read vector data %d\n", i);
-            break;
-        }
-        
-        if ((i + 1) % 100000 == 0) {
-            printf("  Loaded %d/%d vectors\n", i + 1, *count);
-        }
-    }
-    
-    fclose(f);
-    printf("SIFT dataset loaded successfully\n\n");
-    return vectors;
+int rand_int(int max) {
+    return rand() % max;
 }
 
-// Evaluation Metrics
-
-float calculate_average_approximation_factor(Neighbor* approx, Neighbor* exact, 
-                                             int count) {
-    float sum = 0.0f;
-    for (int i = 0; i < count; i++) {
-        if (exact[i].distance > 0.0f) {
-            sum += approx[i].distance / exact[i].distance;
-        } else {
-            sum += 1.0f;
-        }
-    }
-    return count > 0 ? sum / count : 1.0f;
+int compare_results(const void *a, const void *b) {
+    float diff = ((SearchResult*)a)->distance - ((SearchResult*)b)->distance;
+    return (diff > 0) - (diff < 0);
 }
 
-float calculate_recall_at_n(Neighbor* approx, Neighbor* exact, int N) {
+float compute_recall(SearchResult *approx, int approx_count, SearchResult *exact, int exact_count) {
+    if (exact_count == 0) return 0.0;
+    
     int matches = 0;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
+    for (int i = 0; i < approx_count; i++) {
+        for (int j = 0; j < exact_count; j++) {
             if (approx[i].id == exact[j].id) {
                 matches++;
                 break;
             }
         }
     }
-    return N > 0 ? (float)matches / N : 0.0f;
+    
+    return (float)matches / exact_count;
+}
+
+// Data Load
+
+Vector* load_mnist(const char *filename, int *count, int *dim, int isQuery) {
+    FILE *fp = fopen(filename, "rb");
+    if (!fp) {
+        printf("Error opening file: %s\n", filename);
+        return NULL;
+    }
+
+    int t = 0;
+    t++;
+    
+    unsigned int magic, n_images, rows, cols;
+    t = fread(&magic, 4, 1, fp);
+    t = fread(&n_images, 4, 1, fp);
+    t = fread(&rows, 4, 1, fp);
+    t = fread(&cols, 4, 1, fp);
+    
+    magic = __builtin_bswap32(magic);
+    n_images = __builtin_bswap32(n_images);
+    rows = __builtin_bswap32(rows);
+    cols = __builtin_bswap32(cols);
+    
+    *count = n_images;
+    *dim = rows * cols;
+    if (isQuery) {
+        *count = 500;
+    } else {
+        *count = 5000;
+    }
+    
+    
+    Vector *vectors = (Vector*)malloc(n_images * sizeof(Vector));
+    
+    for (int i = 0; i < n_images; i++) {
+        vectors[i].dim = *dim;
+        vectors[i].id = i;
+        vectors[i].coords = (float*)malloc(*dim * sizeof(float));
+        
+        unsigned char *buffer = (unsigned char*)malloc(*dim);
+        t = fread(buffer, 1, *dim, fp);
+        
+        for (int j = 0; j < *dim; j++) {
+            vectors[i].coords[j] = (float)buffer[j];
+        }
+        free(buffer);
+    }
+    
+    fclose(fp);
+    printf("Loaded %d MNIST vectors (dim=%d)\n", *count, *dim);
+    return vectors;
+}
+
+Vector* load_sift(const char *filename, int *count, int *dim, int isQuery) {
+    FILE *fp = fopen(filename, "rb");
+    if (!fp) {
+        printf("Error opening file: %s\n", filename);
+        return NULL;
+    }
+    
+    fseek(fp, 0, SEEK_END);
+    long file_size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    int t = 0;
+    t++;
+
+    int first_dim;
+    t = fread(&first_dim, 4, 1, fp);
+    fseek(fp, 0, SEEK_SET);
+    
+    *dim = first_dim;
+    int bytes_per_vector = 4 + first_dim * 4; 
+    *count = file_size / bytes_per_vector;
+    if (isQuery) {
+        *count = 1000;
+    } else {
+        *count = 10000;
+    }
+    
+    Vector *vectors = (Vector*)malloc(*count * sizeof(Vector));
+    
+    for (int i = 0; i < *count; i++) {
+        int d;
+        t = fread(&d, 4, 1, fp);
+        
+        vectors[i].dim = d;
+        vectors[i].id = i;
+        vectors[i].coords = (float*)malloc(d * sizeof(float));
+        t = fread(vectors[i].coords, sizeof(float), d, fp);
+    }
+    
+    fclose(fp);
+    printf("Loaded %d SIFT vectors (dim=%d)\n", *count, *dim);
+    return vectors;
+}
+
+void free_vectors(Vector *vectors, int count) {
+    for (int i = 0; i < count; i++) {
+        free(vectors[i].coords);
+    }
+    free(vectors);
 }
