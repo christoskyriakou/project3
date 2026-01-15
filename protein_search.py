@@ -73,24 +73,18 @@ def load_seq_db(fasta_path):
         full_desc = record.description
         
         # Αν η περιγραφή περιέχει "Full=", συνήθως είναι SwissProt format
-        # π.χ. "sp|ID|NAME RecName: Full=Protein Name; AltName=..."
         if "Full=" in full_desc:
             try:
-                # Παίρνουμε το κομμάτι μετά το Full= και πριν το ;
                 clean_desc = full_desc.split("Full=")[1].split(";")[0]
             except:
                 clean_desc = full_desc.split(None, 1)[-1]
         else:
-            # Fallback: Παίρνουμε ό,τι υπάρχει μετά το πρώτο κενό
             parts = full_desc.split(None, 1)
             if len(parts) > 1:
                 clean_desc = parts[1]
             else:
-                # Αν δεν υπάρχει περιγραφή, παίρνουμε το Mnemonic από το ID
-                # π.χ. sp|P12345|KINASE_HUMAN -> KINASE_HUMAN
                 clean_desc = record.id.split('|')[-1] if '|' in record.id else record.id
 
-        # Καθαρισμός από "OS=..." (Organism Species) για να γλιτώσουμε χώρο
         if "OS=" in clean_desc:
             clean_desc = clean_desc.split("OS=")[0].strip()
             
@@ -126,6 +120,8 @@ def embed_queries(fasta_path):
             results = model(batch_tokens, repr_layers=[6])
         token_embeddings = results["representations"][6]
         seq_embed = token_embeddings[0, 1 : len(seq) + 1].mean(0).cpu().numpy()
+        
+        # Queries are ALWAYS normalized for best results
         seq_embed = l2_normalize(seq_embed)
         embeddings.append(seq_embed)
     return np.array(embeddings, dtype=np.float32), ids
@@ -205,9 +201,10 @@ def run_c_search_batch(method, db_file, all_queries_file, N, params, id_mapping,
         cmd = [BINARY_IVF_PQ, "-d", db_file, "-q", all_queries_file, "-o", out_tmp.name, "-N", str(N), "-type", "sift"]
         cmd += ["-ivfpq", "-kclusters", str(params['ivf_k']), "-nprobe", str(params['ivf_probe']), "-M", "20", "-nbits", "8", "-range", "false"]
     elif method == "neural":    
+        # Το neural καλεί το python script
         cmd = ["python3", "nlsh_search.py", "-d", db_file, "-q", all_queries_file, "-i", "nlsh_model.pth", "-o", out_tmp.name, "-type", "sift", "-N", str(N)]
     
-    print(f"   [BATCH] Running {method} on all queries...")
+    print(f"   [BATCH] Running {method} using DB: {db_file}...")
     start = time.time()
     try:
         subprocess.run(cmd, timeout=600, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
@@ -253,12 +250,29 @@ def main():
     
     query_vecs, query_ids = embed_queries(args.queries)
     if len(query_vecs) == 0: sys.exit(1)
-    query_seqs = {r.id: str(r.seq) for r in SeqIO.parse(args.queries, "fasta")}
-    db_seqs, db_descs = load_seq_db(args.swissprot)
-    blast_db = setup_blast_db(args.swissprot)
+    
+    # ------------------------------------------------------------
+    # [FIX] ΔΗΜΙΟΥΡΓΙΑ NORMALIZED DB ΜΟΝΟ ΓΙΑ NEURAL
+    # ------------------------------------------------------------
+    raw_db_path = args.database
+    normalized_db_path = "normalized_db_neural.fvecs"
+    
+    # Φτιάχνουμε το normalized αρχείο αν χρειάζεται (αν θα τρέξουμε neural)
+    run_neural = (args.method == "all" or args.method == "neural")
+    if run_neural:
+        print("[INFO] Creating Normalized DB copy for Neural LSH...")
+        raw_db = load_fvecs(raw_db_path)
+        # L2 Normalization
+        norms = np.linalg.norm(raw_db, axis=1, keepdims=True)
+        norm_db = raw_db / np.maximum(norms, 1e-10)
+        write_fvecs(normalized_db_path, norm_db)
     
     batch_query_file = "all_queries_batch.fvecs"
     write_fvecs(batch_query_file, query_vecs)
+    
+    query_seqs = {r.id: str(r.seq) for r in SeqIO.parse(args.queries, "fasta")}
+    db_seqs, db_descs = load_seq_db(args.swissprot)
+    blast_db = setup_blast_db(args.swissprot)
     
     methods = ["lsh", "hypercube", "ivf", "ivfpq", "neural"] if args.method == "all" else [args.method]
     if "neural" in methods and not os.path.exists("nlsh_model.pth"): methods.remove("neural")
@@ -268,7 +282,13 @@ def main():
     
     print("\n[START] Executing C Binaries in BATCH mode...")
     for m in methods:
-        res, t = run_c_search_batch(m, args.database, batch_query_file, args.N, vars(args), id_mapping, len(query_vecs))
+        # [CRITICAL FIX]: Διαλέγουμε το σωστό αρχείο βάσης
+        if m == "neural":
+            current_db = normalized_db_path # Το Neural θέλει normalized
+        else:
+            current_db = raw_db_path        # Τα C binaries θέλουν το original
+            
+        res, t = run_c_search_batch(m, current_db, batch_query_file, args.N, vars(args), id_mapping, len(query_vecs))
         method_results[m] = res
         method_times[m] = t
 
@@ -328,17 +348,15 @@ def main():
                 # --- ΣΧΟΛΙΑΣΜΟΣ ΒΙΟΛΟΓΙΚΗΣ ΣΗΜΑΣΙΑΣ ---
                 clean_name = db_descs.get(found_id, "-")
                 
-                # ΛΟΓΙΚΗ ΓΙΑ REMOTE HOMOLOG:
-                # 1. Μικρή απόσταση (π.χ. < 0.45)
-                # 2. ΟΧΙ στο BLAST
-                # 3. Χαμηλό Identity (αυτό εξυπακούεται αν δεν είναι στο BLAST)
                 note = ""
-                if not in_blast and d_val < 0.45 and d_val > 0:
+                # Προσαρμογή κατωφλιού: Αν είναι neural με normalized data, το L2 είναι πιο μικρό (0-2)
+                # Αν είναι LSH/Hypercube (raw), το L2 μπορεί να είναι μικρό αν και εκείνα είναι normalized? 
+                # Όχι, τα raw embeddings του ESM2 είναι ήδη αρκετά μικρά (~0.3-0.5 normalized).
+                if not in_blast and d_val < 0.65 and d_val > 0:
                     note = " [Possible Remote Homolog?]"
                 
                 bio_comment = f"{clean_name}{note}"
                 
-                # Truncate για να μην χαλάει ο πίνακας
                 if len(bio_comment) > 45: bio_comment = bio_comment[:42] + "..."
                 
                 disp_id = r['id'] if len(r['id']) <= 20 else r['id'][:17] + "..."
@@ -349,7 +367,10 @@ def main():
         f_out.flush()
         
     f_out.close()
+    
+    # Cleanup Temp Files
     if os.path.exists(batch_query_file): os.remove(batch_query_file)
+    if os.path.exists(normalized_db_path): os.remove(normalized_db_path)
     print(f"[DONE] Results saved to {args.output}")
 
 if __name__ == "__main__":
