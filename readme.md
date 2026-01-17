@@ -1,41 +1,122 @@
-# Protein Remote Homology Detection using ANN Methods
+# Ανίχνευση Απομακρυσμένων Ομολόγων Πρωτεϊνών με Μεθόδους ANN
 
-**Εργασία 3 - Υπολογιστική Βιολογία & Αναζήτηση Δεδομένων**
+**Εργασία 3 - Υπολογιστική Βιολογία & Αναζήτηση Δεδομένων**  
+**Χειμερινό Εξάμηνο 2025-26**  
+**Developers:** Κυριακού Χρήστος - sdi2300096, Πετρίδου Ελισάβετ - sdi2300170
 
-Σύστημα για την ανίχνευση απομακρυσμένων ομολόγων πρωτεϊνών χρησιμοποιώντας ESM-2 embeddings και Approximate Nearest Neighbor (ANN) αλγορίθμους.
+
+Σύστημα για την ανίχνευση απομακρυσμένων ομολόγων πρωτεϊνών (remote homologs) χρησιμοποιώντας ESM-2 embeddings και αλγορίθμους Προσεγγιστικής Αναζήτησης Πλησιέστερων Γειτόνων (Approximate Nearest Neighbor - ANN).
 
 ---
 
 ## Περιγραφή
 
-Το έργο αυτό αντιμετωπίζει το πρόβλημα της ανίχνευσης **remote homologs** - πρωτεϊνών με παρόμοια δομή και λειτουργία αλλά χαμηλή ομοιότητα ακολουθίας (<30%, "Twilight Zone"). 
+Τα παραδοσιακά εργαλεία στοίχισης ακολουθιών όπως το BLAST αδυνατούν να ανιχνεύσουν **απομακρυσμένες ομόλογες** (remote homologs) πρωτεΐνες - πρωτεΐνες που διατηρούν παρόμοια τρισδιάστατη δομή και λειτουργία παρόλο που έχουν χαμηλή ομοιότητα αλληλουχίας (<30%, γνωστή ως "Ζώνη Λυκόφωτος" - Twilight Zone).
 
-### Βασικά Χαρακτηριστικά:
-- Παραγωγή διανυσματικών αναπαραστάσεων με **ESM-2** (facebook/esm2_t6_8M_UR50D)
-- Υποστήριξη **5 ANN αλγορίθμων**: LSH, Hypercube, IVF-Flat, IVFPQ, Neural LSH
-- Σύγκριση με **BLAST** για βιολογική αξιολόγηση
-- Υπολογισμός **Recall@N** και **QPS** μετρικών
+Αυτό το έργο υλοποιεί:
+- **Διανυσματικές Αναπαραστάσεις ESM-2**: Μετατροπή πρωτεϊνών σε διανύσματα 320 διαστάσεων
+- **5 Μέθοδοι ANN**: Ευκλείδεια LSH, Υπερκύβος, IVF-Flat, IVFPQ, Νευρωνικό LSH
+- **Σύγκριση με BLAST**: Αξιολόγηση έναντι παραδοσιακής στοίχισης ακολουθιών
+- **Βιολογική Επαλήθευση**: Χρήση σχολιασμών UniProt για επιβεβαίωση
 
 ---
 
-## Δομή Αρχείων
+## Θεωρητικό Υπόβαθρο
+
+### Τι είναι τα Remote Homologs;
+
+**Ομόλογες πρωτεΐνες** (homologs) είναι πρωτεΐνες που μοιράζονται κοινό εξελικτικό προγονικό. Διακρίνονται σε:
+
+1. **Στενοί ομόλογοι** (close homologs): >40% ταυτότητα αλληλουχίας
+   - Εύκολα ανιχνεύσιμοι με BLAST
+   - Σαφείς εξελικτικές σχέσεις
+
+2. **Απομακρυσμένοι ομόλογοι** (remote homologs): 15-30% ταυτότητα
+   - Διατηρούν παρόμοια **τρισδιάστατη δομή** και **λειτουργία**
+   - Χαμηλή ομοιότητα αλληλουχίας λόγω εξελικτικής απόστασης
+   - Δύσκολο να ανιχνευθούν με παραδοσιακές μεθόδους
+
+3. **Ζώνη Λυκόφωτος** (Twilight Zone): <30% ταυτότητα
+   - Η περιοχή όπου το BLAST αποτυγχάνει
+   - Απαιτούνται πιο εξελιγμένες μέθοδοι
+
+### Γιατί τα Embeddings;
+
+**ESM-2** (Evolutionary Scale Modeling) είναι ένα μοντέλο γλώσσας πρωτεϊνών που:
+- Εκπαιδεύτηκε σε 65 εκατομμύρια ακολουθίες πρωτεϊνών
+- Μαθαίνει **εξελικτικά μοτίβα** και **δομικές σχέσεις**
+- Κωδικοποιεί κάθε πρωτεΐνη σε διάνυσμα 320 διαστάσεων
+- Οι παρόμοιες πρωτεΐνες έχουν **κοντινά διανύσματα** στον χώρο embedding
+
+**Πλεονέκτημα**: Τα embeddings συλλαμβάνουν **δομική ομοιότητα** ακόμα και όταν η ομοιότητα αλληλουχίας είναι πολύ χαμηλή.
+
+### Αλγόριθμοι ANN
+
+Για την αποδοτική αναζήτηση σε χιλιάδες διανύσματα, χρησιμοποιούμε:
+
+#### 1. Ευκλείδεια LSH (Locality-Sensitive Hashing)
+- **Ιδέα**: Κατακερματισμός διανυσμάτων έτσι ώστε τα κοντινά σημεία να πέφτουν στο ίδιο "κουβά"
+- **Συναρτήσεις κατακερματισμού**: h(v) = ⌊(a·v + b) / w⌋
+  - a: τυχαίο διάνυσμα προβολής
+  - b: τυχαία μετατόπιση
+  - w: πλάτος κουβά (παράμετρος ευαισθησίας)
+- **Πολλαπλοί πίνακες** (L): Αύξηση πιθανότητας εύρεσης γειτόνων
+
+#### 2. Προβολή Υπερκύβου (Hypercube Projection)
+- **Ιδέα**: Προβολή σε χαμηλότερες διαστάσεις (π.χ. 320 → 12)
+- **Δυαδικός κώδικας**: Κάθε σημείο αντιστοιχεί σε κορυφή υπερκύβου
+- **Αναζήτηση**: Εξερεύνηση γειτονικών κορυφών (multi-probe)
+- **Συμβιβασμός**: Χάνεται πληροφορία στην προβολή αλλά γίνεται πολύ γρήγορη
+
+#### 3. IVF-Flat (Inverted File with Flat Encoding)
+- **Ιδέα**: Διαμέριση του χώρου σε clusters με k-means
+- **Ευρετήριο**: Κάθε cluster περιέχει λίστα από διανύσματα
+- **Αναζήτηση**: Έλεγχος μόνο των nprobe πλησιέστερων clusters
+- **Ακρίβεια**: Πλήρης ακρίβεια εντός των clusters που ελέγχονται
+
+#### 4. IVFPQ (IVF with Product Quantization)
+- **Ιδέα**: Συμπίεση διανυσμάτων με κβαντοποίηση προϊόντος
+- **Διαμέριση**: Χωρισμός κάθε διανύσματος σε M υπο-διανύσματα
+- **Κωδικοποίηση**: Κάθε υπο-διάνυσμα αντικαθίσταται από το πλησιέστερο κέντρο
+- **Συμπίεση**: 320 floats → 16 bytes (20x compression)
+- **Συμβιβασμός**: Ταχύτητα και μνήμη έναντι ακρίβειας
+
+#### 5. Νευρωνικό LSH (Neural LSH)
+- **Ιδέα**: Μάθηση βέλτιστης διαμέρισης με νευρωνικά δίκτυα
+- **Διαδικασία**:
+  1. Κατασκευή γράφου k-NN (k πλησιέστεροι γείτονες)
+  2. Διαμέριση γράφου με KaHIP (balanced graph partitioning)
+  3. Εκπαίδευση MLP ταξινομητή για πρόβλεψη διαμερίσματος
+  4. Αναζήτηση: Έλεγχος top-T προβλεπόμενων διαμερισμάτων
+- **Πλεονέκτημα**: Μαθαίνει την **δομή των δεδομένων**
+
+---
+
+## Αρχεία Έργου
 
 ```
-.
-├── protein_embed.py         # Παραγωγή ESM-2 embeddings
-├── protein_search.py        # ANN benchmark & σύγκριση
-├── dataset_parser.py        # Φόρτωση δεδομένων (από Εργασία 1/2)
-├── distances.py             # Υπολογισμός αποστάσεων
-├── models.py                # Neural LSH model
-├── nlsh_build.py            # Neural LSH training
-├── nlsh_search.py           # Neural LSH search
-├── graph_utils.py           # KNN graph construction
-├── lsh.c / lsh.h            # LSH C implementation
-├── hypercube.c / hc.h       # Hypercube C implementation
-├── ivfflat.c / kmeans.h     # IVF-Flat implementation
-├── ivfpq.c / dataload.h     # IVFPQ implementation
-├── requirements.txt         # Python dependencies
-└── README.md                # Αυτό το αρχείο
+projecterg3/
+├── protein_embed.py              # Παραγωγή διανυσμάτων ESM-2
+├── protein_search.py             # Σύγκριση ANN μεθόδων & BLAST
+├── protein_nlsh_build.py         # Κατασκευή ευρετηρίου Neural LSH
+├── annotation_helper.py          # Ανάκτηση σχολιασμών UniProt
+├── analyze_results.py            # Ανάλυση αποτελεσμάτων & οπτικοποίηση
+├── dataset_parser.py             # Βοηθητικές συναρτήσεις φόρτωσης
+├── distances.py                  # Υπολογισμός αποστάσεων
+├── models.py                     # Μοντέλο MLP για Neural LSH
+├── graph_utils.py                # Γράφος k-NN & διαμέριση KaHIP
+├── nlsh_build.py                 # Εκπαίδευση Neural LSH (από Εργασία 2)
+├── nlsh_search.py                # Αναζήτηση Neural LSH (από Εργασία 2)
+├── lsh.c / lsh.h                 # Υλοποίηση LSH σε C (από Εργασία 1)
+├── hypercube.c / hc.h            # Υλοποίηση Υπερκύβου σε C (από Εργασία 1)
+├── ivfflat.c / kmeans.h          # Υλοποίηση IVF-Flat (από Εργασία 1)
+├── ivfpq.c / dataload.h          # Υλοποίηση IVFPQ (από Εργασία 1)
+├── main.c                        # Κύριο εκτελέσιμο C
+├── Makefile                      # Σύστημα μεταγλώττισης
+├── requirements.txt              # Εξαρτήσεις Python
+├── run_protein_search.sh         # Σενάριο πλήρους εκτέλεσης
+├── README.md                     # Αυτό το αρχείο
+└── REPORT.md                     # Λεπτομερής πειραματική αναφορά
 ```
 
 ---
@@ -44,11 +125,11 @@
 
 ### Προαπαιτούμενα
 - Python 3.10+
-- CUDA (προαιρετικό, για GPU acceleration)
-- GCC compiler (για C modules)
-- BLAST+ tools
+- CUDA (προαιρετικό, για επιτάχυνση GPU)
+- Μεταγλωττιστής GCC (για modules C)
+- Εργαλεία BLAST+
 
-### Εγκατάσταση Python Dependencies
+### Εγκατάσταση Εξαρτήσεων Python
 
 ```bash
 pip install -r requirements.txt
@@ -73,34 +154,17 @@ sudo apt-get install ncbi-blast+
 ```bash
 brew install blast
 ```
-
-### Compilation C Modules
-
-```bash
-# LSH
-gcc -o lsh_search lsh.c -lm -O3
-
-# Hypercube
-gcc -o hypercube_search hypercube.c -lm -O3
-
-# IVF-Flat
-gcc -o ivfflat_search ivfflat.c kmeans.c dataload.c -lm -O3
-
-# IVFPQ
-gcc -o ivfpq_search ivfpq.c kmeans.c dataload.c -lm -O3
-```
-
 ---
 
 ## Χρήση
 
-### 🚀 Quick Start (Πλήρες Pipeline)
+### Γρήγορη Εκκίνηση (Πλήρης Διαδικασία)
 
 ```bash
-# Make script executable
+# Δώστε δικαιώματα εκτέλεσης στο σενάριο
 chmod +x run_protein_search.sh
 
-# Run complete pipeline
+# Εκτέλεση πλήρους διαδικασίας
 ./run_protein_search.sh \
     --data swissprot_small_small.fasta \
     --query targets.fasta \
@@ -110,14 +174,14 @@ chmod +x run_protein_search.sh
 ```
 
 Αυτό θα εκτελέσει:
-1. ESM-2 embedding generation
-2. Neural LSH index building (αν χρειάζεται)
-3. ANN search με όλες τις μεθόδους
+1. Παραγωγή διανυσμάτων ESM-2
+2. Κατασκευή ευρετηρίου Neural LSH (αν χρειάζεται)
+3. Αναζήτηση ANN με όλες τις μεθόδους
 4. Σύγκριση με BLAST
 
 ---
 
-### Σενάριο 1: Παραγωγή Embeddings
+### Σενάριο 1: Παραγωγή Διανυσμάτων (Embeddings)
 
 ```bash
 python protein_embed.py \
@@ -126,18 +190,18 @@ python protein_embed.py \
 ```
 
 **Παράμετροι:**
-- `-i, --input`: Input FASTA αρχείο με πρωτεΐνες
-- `-o, --output`: Output αρχείο (.fvecs ή .dat)
-- `--model`: ESM-2 model (default: facebook/esm2_t6_8M_UR50D)
-- `--batch_size`: Batch size για GPU (default: 8)
+- `-i, --input`: Αρχείο εισόδου FASTA με πρωτεΐνες
+- `-o, --output`: Αρχείο εξόδου (.fvecs ή .dat)
+- `--model`: Μοντέλο ESM-2 (προεπιλογή: facebook/esm2_t6_8M_UR50D)
+- `--batch_size`: Μέγεθος δέσμης για GPU (προεπιλογή: 8)
 
 **Έξοδος:**
-- `protein_vectors.fvecs`: Embeddings σε fvecs format
-- `protein_vectors_ids.txt`: Mapping index → sequence ID
+- `protein_vectors.fvecs`: Διανύσματα σε μορφή fvecs
+- `protein_vectors_ids.txt`: Αντιστοίχιση δείκτη → αναγνωριστικό ακολουθίας
 
 ---
 
-### Σενάριο 2: Build Neural LSH Index
+### Σενάριο 2: Κατασκευή Ευρετηρίου Neural LSH
 
 ```bash
 python protein_nlsh_build.py \
@@ -149,15 +213,15 @@ python protein_nlsh_build.py \
 ```
 
 **Παράμετροι:**
-- `-d, --data`: Protein embeddings (.fvecs)
-- `-i, --index`: Output index directory
-- `--knn`: k for KNN graph (default: 10)
-- `-m`: Number of partitions (default: 100)
-- `--epochs`: Training epochs (default: 20)
+- `-d, --data`: Διανύσματα πρωτεϊνών (.fvecs)
+- `-i, --index`: Κατάλογος εξόδου ευρετηρίου
+- `--knn`: k για γράφο k-NN (προεπιλογή: 10)
+- `-m`: Αριθμός διαμερισμάτων (προεπιλογή: 100)
+- `--epochs`: Εποχές εκπαίδευσης (προεπιλογή: 20)
 
 ---
 
-### Σενάριο 3: ANN Search Benchmark
+### Σενάριο 3: Σύγκριση Μεθόδων ANN
 
 ```bash
 python protein_search.py \
@@ -169,260 +233,196 @@ python protein_search.py \
 ```
 
 **Παράμετροι:**
-- `-d, --data`: Embedding data file (.fvecs)
-- `-q, --query`: Query FASTA file
-- `-o, --output`: Output results file
-- `-method`: ANN method (`all`, `lsh`, `hypercube`, `neural`, `ivf`, `ivfpq`)
-- `-N`: Number of neighbors (default: 50)
+- `-d, --data`: Αρχείο δεδομένων διανυσμάτων (.fvecs)
+- `-q, --query`: Αρχείο ερωτημάτων FASTA
+- `-o, --output`: Αρχείο εξόδου αποτελεσμάτων
+- `-method`: Μέθοδος ANN (`all`, `lsh`, `hypercube`, `neural`, `ivf`, `ivfpq`)
+- `-N`: Αριθμός γειτόνων (προεπιλογή: 50)
 
 **Έξοδος:**
 
-Για κάθε query, το αρχείο περιέχει:
+Για κάθε ερώτημα, το αρχείο περιέχει:
 
-1. **Συνοπτική σύγκριση**: QPS και Recall@N για κάθε μέθοδο
-2. **Top-N γείτονες**: Αναλυτική λίστα με:
-   - Neighbor ID
-   - L2 distance
-   - BLAST identity (%)
-   - In BLAST Top-N? (Yes/No)
-   - Bio comment (π.χ. "Remote homolog?")
+1. **Συνοπτική σύγκριση**: Ερωτήματα ανά Δευτερόλεπτο (QPS) και Ανάκληση@N για κάθε μέθοδο
+2. **Κορυφαίοι-N γείτονες**: Λεπτομερής λίστα με:
+   - Αναγνωριστικό γείτονα
+   - Απόσταση L2
+   - Ταυτότητα BLAST (%)
+   - Στους Κορυφαίους-N του BLAST; (Ναι/Όχι)
+   - Βιολογικό σχόλιο (π.χ. "Απομακρυσμένος ομόλογος;")
 
-### Σενάριο 4: Analyze Results
+**Παράδειγμα εξόδου:**
+```
+Πρωτεΐνη Ερωτήματος: sp|Q6GZX4|001R_FRG3G
+N = 50 (μέγεθος λίστας Κορυφαίων-N για αξιολόγηση Ανάκλησης@N)
+
+[1] Συνοπτική σύγκριση μεθόδων
+------------------------------------------------------------------------------
+Μέθοδος              | Χρόνος/ερώτημα (s) | QPS        | Ανάκληση@N vs BLAST Κορυφαίοι-N
+------------------------------------------------------------------------------
+lsh                  | 0.025              | 40         | 0.88
+hypercube            | 0.032              | 31         | 0.84
+neural               | 0.012              | 83         | 0.92
+ivf                  | 0.010              | 100        | 0.90
+ivfpq                | 0.007              | 143        | 0.86
+BLAST (Αναφορά)      | 1.450              | 0.7        | 1.00 (ορίζει τους Κορυφαίους-N)
+------------------------------------------------------------------------------
+
+[2] Κορυφαίοι-N γείτονες ανά μέθοδο (εδώ π.χ. N = 10 για εκτύπωση)
+
+Μέθοδος: neural
+Κατάταξη | Γείτονας ID          | Απόσταση L2 | Ταυτότητα BLAST | Στους BLAST Κορυφαίους-N? | Βιολογικό σχόλιο
+--------------------------------------------------------------------------------------------------------------
+1        | sp|Q6GZX3|002L       | 0.145       | 18.5            | Ναι                       | Απομακρυσμένος ομόλογος; (Ζώνη Λυκόφωτος)
+2        | sp|Q197F8|002R       | 0.167       | 24.2            | Ναι                       | Απομακρυσμένος ομόλογος; (Ζώνη Λυκόφωτος)
+...
+```
+
+### Σενάριο 4: Ανάλυση Αποτελεσμάτων
 
 ```bash
-# Basic analysis
+# Βασική ανάλυση
 python analyze_results.py -i results.txt
 
-# With plots
+# Με γραφήματα
 python analyze_results.py -i results.txt --plot --output-dir ./plots
 ```
 
 Αυτό θα παράγει:
-- Summary statistics table
-- Recall vs QPS plots
-- Method comparison charts
-- List of potential remote homologs
+- Πίνακα συγκεντρωτικών στατιστικών
+- Γραφήματα Ανάκλησης έναντι QPS
+- Διαγράμματα σύγκρισης μεθόδων
+- Λίστα πιθανών απομακρυσμένων ομολόγων
 
 ---
 
-## Προετοιμασία για C Executables
+## Προετοιμασία για Εκτελέσιμα C
 
-Πριν τρέξετε το search, βεβαιωθείτε ότι έχετε μεταγλωττίσει το `./search` executable:
+Πριν εκτελέσετε την αναζήτηση, βεβαιωθείτε ότι έχετε μεταγλωττίσει το εκτελέσιμο `./search`:
 
 ```bash
-# Στο root directory του project
+# Στον κεντρικό κατάλογο του έργου
 make
 
-# Ή χειροκίνητα
+# Και χειροκίνητα
 cd LSH_Project && make && cd ..
 cd HYPERCUBE_Project && make && cd ..
 cd IVFFlat && make && cd ..
 cd IVFPQ && make && cd ..
 ```
 
-Το `protein_search.py` περιμένει να βρει το `./search` executable στο working directory.
-
-```
-Query Protein: sp|Q6GZX4|001R_FRG3G
-N = 50 (μέγεθος λίστας Top-N για την αξιολόγηση Recall@N)
-
-[1] Συνοπτική σύγκριση μεθόδων
-------------------------------------------------------------------------------
-Method               | Time/query (s)  | QPS        | Recall@N vs BLAST Top-N
-------------------------------------------------------------------------------
-lsh                  | 0.025           | 40         | 0.88
-hypercube            | 0.032           | 31         | 0.84
-neural               | 0.012           | 83         | 0.92
-ivf                  | 0.010           | 100        | 0.90
-ivfpq                | 0.007           | 143        | 0.86
-BLAST (Ref)          | 1.450           | 0.7        | 1.00 (ορίζει το Top-N)
-------------------------------------------------------------------------------
-
-[2] Top-N γείτονες ανά μέθοδο (εδώ π.χ. N = 10 για εκτύπωση)
-
-Method: neural
-Rank   | Neighbor ID          | L2 Dist    | BLAST Identity  | In BLAST Top-N?   | Bio comment
---------------------------------------------------------------------------------------------------------------
-1      | sp|Q6GZX3|002L       | 0.145      | 18.5            | Yes               | Remote homolog? (Twilight Zone)
-2      | sp|Q197F8|002R       | 0.167      | 24.2            | Yes               | Remote homolog? (Twilight Zone)
-...
-```
+Το `protein_search.py` αναμένει να βρει το εκτελέσιμο `./search` στον κατάλογο εργασίας.
 
 ---
 
-## Αλγόριθμοι & Υπερπαράμετροι
+## Βέλτιστες Παράμετροι (από Πειράματα)
 
-### 1. Euclidean LSH
-- **k**: Number of hash functions per table (προτεινόμενο: 10-14)
-- **L**: Number of hash tables (προτεινόμενο: 8-12)
-- **w**: Bucket width (προτεινόμενο: 4.0 για ESM-2 embeddings)
+Βάσει των πειραματικών αποτελεσμάτων με SwissProt (50χιλ. πρωτεΐνες, διανύσματα 320 διαστάσεων):
 
-### 2. Hypercube Projection
-- **k**: Projection dimensions (προτεινόμενο: 12-16)
-- **M**: Max candidates (προτεινόμενο: 5000-10000)
-- **probes**: Number of vertices to probe (προτεινόμενο: 50-100)
+### Ευκλείδεια LSH
+```
+--lsh_k 6          # Συναρτήσεις κατακερματισμού ανά πίνακα
+--lsh_L 8          # Αριθμός πινάκων
+--lsh_w 1.0        # Πλάτος κουβά
+```
+**Απόδοση**: Ανάκληση@50 = 0.20-0.66, QPS = 4
 
-### 3. IVF-Flat
-- **kclusters**: Number of clusters (προτεινόμενο: √n)
-- **nprobe**: Clusters to search (προτεινόμενο: 10-20)
+### Υπερκύβος
+```
+--hc_k 12          # Διαστάσεις προβολής
+--hc_M 5000        # Μέγιστοι υποψήφιοι
+--hc_probes 2      # Κορυφές προς εξερεύνηση
+--hc_w 1.5         # Πλάτος κουβά
+```
+**Απόδοση**: Ανάκληση@50 = 0.10-0.36, QPS = 4
 
-### 4. IVFPQ
-- **kclusters**: Coarse quantizer clusters (προτεινόμενο: √n)
-- **M**: Number of subspaces (προτεινόμενο: 8-16)
-- **nbits**: Bits per subspace (προτεινόμενο: 8)
-- **nprobe**: Clusters to search (προτεινόμενο: 15-25)
+### IVF-Flat
+```
+--ivf_k 200        # Αριθμός συστάδων (clusters)
+--ivf_probe 20     # Συστάδες προς αναζήτηση
+```
+**Απόδοση**: Ανάκληση@50 = 0.02-0.10, QPS = 0 (αργό λόγω κατασκευής ευρετηρίου)
 
-### 5. Neural LSH
-- **m**: Number of partitions (προτεινόμενο: 100-200)
-- **T**: Multi-probe parameter (προτεινόμενο: 5-10)
-- **layers**: MLP depth (προτεινόμενο: 3)
-- **hidden**: Hidden layer size (προτεινόμενο: 64-128)
+### IVFPQ
+```
+--ivf_k 50         # Συστάδες χονδροειδούς κβαντοποιητή
+--ivf_probe 5      # Συστάδες προς αναζήτηση
+--ivfpq_M 16       # Υπο-χώροι (προεπιλογή)
+--ivfpq_nbits 8    # Bits ανά υπο-χώρο (προεπιλογή)
+```
+**Απόδοση**: Ανάκληση@50 = 0.00-0.18, QPS = 0 (αργό λόγω κατασκευής ευρετηρίου)
+
+### Νευρωνικό LSH
+```
+-m 15              # Αριθμός διαμερισμάτων
+--knn 40           # k για γράφο k-NN
+--epochs 70        # Εποχές εκπαίδευσης
+--lr 0.00015       # Ρυθμός μάθησης
+--neural_T 5       # Παράμετρος πολλαπλής δοκιμής
+```
+**Απόδοση**: Ανάκληση@50 = 0.00-0.30, QPS = 2
+
+---
+
+## Σημαντικά Ευρήματα
+
+### 1. Απόδοση Μεθόδων
+- **Καλύτερη Ανάκληση**: LSH (μέσος όρος 0.28) και Υπερκύβος (μέσος όρος 0.13)
+- **Ταχύτερες**: LSH και Υπερκύβος (QPS = 4)
+- **Αργότερες**: Μέθοδοι IVF (χρόνος κατασκευής ευρετηρίου)
+
+### 2. Ανίχνευση Απομακρυσμένων Ομολόγων
+Από τα αποτελέσματα, παρατηρήσαμε:
+- **Πρωτεΐνες Ζώνης Λυκόφωτος**: Πολλές πρωτεΐνες με <30% ταυτότητα BLAST βρέθηκαν κοντά στον χώρο διανυσμάτων
+- **Ψευδώς Θετικά**: Υπάρχουν πολλές περιπτώσεις "Πιθανώς ψευδώς θετικό" που χρειάζονται βιολογικό έλεγχο
+
+### 3. Παραδείγματα Απομακρυσμένων Ομολόγων
+```
+Ερώτημα: A0A009HL96
+Μέθοδος: Υπερκύβος
+- sp|Q5HI09|GRAR_STAAC: L2=0.18, Ταυτότητα BLAST=1%, Στους BLAST Κορυφαίους-N? Ναι
+- sp|A5VUU3|DIVK_BRUO2: L2=0.52, Ταυτότητα BLAST=25%, Ζώνη Λυκόφωτος
+
+Ερώτημα: A0A009HQC9  
+Μέθοδος: LSH
+- Πολλαπλές πρωτεΐνες RAPA: L2=0.11-0.13, Ταυτότητα BLAST=1-2%, Στους BLAST Κορυφαίους-N? Ναι
+```
 
 ---
 
 ## Βιολογική Αξιολόγηση
 
-### Ορισμός Remote Homolog
+### Ορισμός Απομακρυσμένου Ομολόγου
 
-Θεωρούμε μία πρωτεΐνη ως **υποψήφια remote homolog** όταν:
+Θεωρούμε μία πρωτεΐνη ως **υποψήφια απομακρυσμένη ομόλογη** όταν:
 
-1. **BLAST identity < 30%** (Twilight Zone)
-2. **Μικρή L2 απόσταση** στο embedding space (Top-N)
+1. **Ταυτότητα BLAST < 30%** (Ζώνη Λυκόφωτος)
+2. **Μικρή απόσταση L2** στον χώρο διανυσμάτων (Κορυφαίοι-N)
 3. **Κοινά χαρακτηριστικά**:
-   - Ίδια Pfam domain
-   - Παρόμοιοι GO terms
-   - Ίδιος EC number
+   - Ίδιος τομέας Pfam
+   - Παρόμοιοι όροι GO
+   - Ίδιος αριθμός EC
    - Κοινή λειτουργική οικογένεια
 
-### Χρήση UniProt Annotations
+### Χρήση Σχολιασμών UniProt
 
-Για την επαλήθευση remote homologs:
+Για την επαλήθευση απομακρυσμένων ομολόγων:
 
-1. Ανάκτηση UniProt entries για τους γείτονες
+1. Ανάκτηση καταχωρήσεων UniProt για τους γείτονες
 2. Έλεγχος για:
-   - Function annotations
-   - Pfam domains (InterPro)
-   - GO terms (Molecular Function, Biological Process)
-   - EC numbers (enzymatic activity)
+   - Σχολιασμοί λειτουργίας
+   - Τομείς Pfam (InterPro)
+   - Όροι GO (Μοριακή Λειτουργία, Βιολογική Διαδικασία)
+   - Αριθμοί EC (ενζυματική δραστηριότητα)
 
 ```python
-# Παράδειγμα annotation check
+# Παράδειγμα ελέγχου σχολιασμού
 from Bio import Entrez, SwissProt
 
 def check_homology(seq_id1, seq_id2):
-    # Retrieve UniProt records
+    # Ανάκτηση εγγραφών UniProt
     record1 = get_uniprot_record(seq_id1)
     record2 = get_uniprot_record(seq_id2)
     
-    # Check for common domains
+    # Έλεγχος για κοινούς τομείς
     domains1 = get_pfam_domains(record1)
-    domains2 = get_pfam_domains(record2)
-    
-    common_domains = set(domains1) & set(domains2)
-    
-    return len(common_domains) > 0
-```
-
----
-
-## Αποτελέσματα & Ανάλυση
-
-### Αναμενόμενα Αποτελέσματα
-
-| Method     | QPS  | Recall@50 | Trade-off            |
-|------------|------|-----------|----------------------|
-| Neural LSH | 80+  | 0.90-0.95 | Καλύτερη ισορροπία   |
-| IVF-Flat   | 100+ | 0.88-0.92 | Πιο γρήγορο          |
-| IVFPQ      | 150+ | 0.82-0.88 | Ταχύτερο, λιγότερο ακριβές |
-| LSH        | 40+  | 0.85-0.90 | Καλό για high-dim    |
-| Hypercube  | 30+  | 0.80-0.85 | Πιο αργό             |
-
-### Remote Homolog Detection
-
-Τα embedding-based methods ξεπερνούν το BLAST σε:
-- **Twilight Zone** (15-30% identity)
-- Δομικές ομολογίες χωρίς sequence conservation
-- Cross-family functional relationships
-
----
-
-## Troubleshooting
-
-### C Executable Not Found
-
-```bash
-Error: ./search: No such file or directory
-```
-
-**Λύση:**
-```bash
-# Compile the main search program
-make
-
-# Or create symbolic link to your executable
-ln -s LSH_Project/lsh ./search
-```
-
-### Out of Memory (GPU)
-
-Μειώστε το `--batch_size`:
-```bash
-python protein_embed.py -i input.fasta -o output.dat --batch_size 4
-```
-
-### Αργή BLAST
-
-Περιορίστε το `-max_target_seqs`:
-```bash
-blastp -query q.fasta -db db -max_target_seqs 100
-```
-
-### C Module Compilation Errors
-
-Βεβαιωθείτε ότι έχετε εγκαταστήσει:
-```bash
-sudo apt-get install build-essential
-```
-
----
-
-## Citation
-
-Εάν χρησιμοποιήσετε αυτό το έργο:
-
-```bibtex
-@software{protein_ann_search_2025,
-  title={Protein Remote Homology Detection using ANN Methods},
-  author={[Το Όνομά σας]},
-  year={2025},
-  institution={[Πανεπιστήμιο]}
-}
-```
-
-### ESM-2 Model:
-```bibtex
-@article{lin2022language,
-  title={Language models of protein sequences at the scale of evolution enable accurate structure prediction},
-  author={Lin, Zeming and Akin, Halil and others},
-  journal={bioRxiv},
-  year={2022}
-}
-```
-
----
-
-## License
-
-MIT License - Ελεύθερο για εκπαιδευτική και ερευνητική χρήση.
-
----
-
-## Επικοινωνία
-
-Για ερωτήσεις ή βοήθεια:
-- Email: [your-email]
-- GitHub Issues: [repository-url]
-
----
-
-**Καλή επιτυχία στην εργασία σας! 🧬🔬**
