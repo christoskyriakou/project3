@@ -100,7 +100,7 @@ projecterg3/
 ├── protein_search.py             # Σύγκριση ANN μεθόδων & BLAST
 ├── protein_nlsh_build.py         # Κατασκευή ευρετηρίου Neural LSH
 ├── annotation_helper.py          # Ανάκτηση σχολιασμών UniProt
-├── analyze_results.py            # Ανάλυση αποτελεσμάτων & οπτικοποίηση
+├── analyze.py                    # Ανάλυση αποτελεσμάτων & οπτικοποίηση
 ├── dataset_parser.py             # Βοηθητικές συναρτήσεις φόρτωσης
 ├── distances.py                  # Υπολογισμός αποστάσεων
 ├── models.py                     # Μοντέλο MLP για Neural LSH
